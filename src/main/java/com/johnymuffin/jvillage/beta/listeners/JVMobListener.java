@@ -77,27 +77,20 @@ public class JVMobListener extends EntityListener implements Listener {
                 damager = (CraftEntity) arrow.getShooter();
                 return;
             }
-
             if (damager instanceof Player) {
                 //Determine if pvp is allowed
                 Village damagerVillage = plugin.getVillageAtLocation(damager.getLocation());
-                if (!(damagerVillage.isPvpEnabled)) {
-                    String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
-                    Bukkit.getServer().broadcastMessage(message);
-                    event.setCancelled(true);
-                }
                 Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
-                if (!(victimVillage.isPvpEnabled)) {
-                    String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", victimVillage.getTownName());
-                    Bukkit.getServer().broadcastMessage(message);
-                    event.setCancelled(true);
+                if (damagerVillage.isPvpEnabled && victimVillage.isPvpEnabled) {
+                    return;
                 }
-                Bukkit.getServer().broadcastMessage("PVP is enabled here");
+                String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
+                Player player = (Player) damager;
+                player.sendMessage(message);
+                event.setCancelled(true);
                 return;
             }
         }
-
-        Bukkit.getServer().broadcastMessage("Damager was a hostile mob.");
 //        System.out.println("Player was damaged by a hostile mob");
 
         Player player = (Player) event.getEntity();
