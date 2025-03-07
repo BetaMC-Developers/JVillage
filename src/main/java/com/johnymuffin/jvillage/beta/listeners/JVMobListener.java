@@ -6,7 +6,6 @@ import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftMonster;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -17,7 +16,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.player.PlayerListener;
 
 public class JVMobListener extends EntityListener implements Listener {
     private JVillage plugin;
@@ -53,11 +51,13 @@ public class JVMobListener extends EntityListener implements Listener {
     }
 
 
-    @EventHandler(priority = Event.Priority.Normal)
-    public void onEntityDamageEvnet(final EntityDamageEvent preEvent) {
+    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    public void onEntityDamageEvent(final EntityDamageEvent preEvent) {
+
         if (!(preEvent instanceof EntityDamageByEntityEvent)) {
             return;
         }
+
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) preEvent;
 
         CraftEntity damager = (CraftEntity) event.getDamager();
@@ -69,19 +69,35 @@ public class JVMobListener extends EntityListener implements Listener {
         }
 //        System.out.println("Player was damaged");
 
-        //Return if the damager is not a hostile mob
+        //If the damager is a hostile mob, continue; Otherwise, whether the attack is allowed is checked
         if (!(damager instanceof Monster)) {
+
             if (damager instanceof CraftArrow) {
                 CraftArrow arrow = (CraftArrow) event.getDamager();
                 damager = (CraftEntity) arrow.getShooter();
-                //Return if the damager is not a hostile mob
-                if (!(damager instanceof Monster)) {
-                    return;
+                return;
+            }
+
+            if (damager instanceof Player) {
+                //Determine if pvp is allowed
+                Village damagerVillage = plugin.getVillageAtLocation(damager.getLocation());
+                if (!(damagerVillage.isPvpEnabled)) {
+                    String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
+                    Bukkit.getServer().broadcastMessage(message);
+                    event.setCancelled(true);
                 }
-            } else {
+                Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
+                if (!(victimVillage.isPvpEnabled)) {
+                    String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", victimVillage.getTownName());
+                    Bukkit.getServer().broadcastMessage(message);
+                    event.setCancelled(true);
+                }
+                Bukkit.getServer().broadcastMessage("PVP is enabled here");
                 return;
             }
         }
+
+        Bukkit.getServer().broadcastMessage("Damager was a hostile mob.");
 //        System.out.println("Player was damaged by a hostile mob");
 
         Player player = (Player) event.getEntity();
@@ -106,8 +122,10 @@ public class JVMobListener extends EntityListener implements Listener {
         damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(priority = Event.Priority.Highest)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
+
+        Bukkit.getServer().broadcastMessage("Listener Test");
 
         //Check if the entity being attacked is a player
         if (!(event.getEntity() instanceof Player)) {
