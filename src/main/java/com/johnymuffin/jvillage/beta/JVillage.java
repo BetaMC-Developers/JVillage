@@ -108,7 +108,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         debugMode = settings.getConfigBoolean("settings.debug-mode.enabled"); //Set debug mode from config
         language = new JVillageLanguage(new File(this.getDataFolder(), "language.yml"), settings.getConfigBoolean("settings.always-use-default-lang.enabled"));
 
-        //Generate WorldCLaimManagers
+        //Generate WorldClaimManagers
 //        for (World world : Bukkit.getWorlds()) {
 ////            claims.put(world.getName(), new WorldClaimManager(plugin, world.getName()));
 //            getWorldClaimManager(world.getName(), true);
@@ -201,7 +201,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 //            int x = (int) (Math.random() * 60000) - 30000;
 //            int z = (int) (Math.random() * 60000) - 30000;
 //
-//            //Get closest village
+//            //Get the closest village
 //            VClaim claim = findClosestClaim(new VCords(x, 0, z, Bukkit.getWorlds().get(0).getName()));
 //            Village village = getVillageMap().getVillage(claim.getVillage());
 //            logger(Level.INFO, "Closest claim to " + x + ", " + z + " is " + village.getTownName() + " at " + (claim.getX() * 16) + ", " + (claim.getZ() * 16));
