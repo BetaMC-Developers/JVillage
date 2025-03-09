@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class Village implements ClaimManager {
     private final JVillage plugin;
-    public boolean isPvpEnabled;
+    //public boolean isPvpEnabled;
     private String townName;
     private final UUID townUUID;
     private final ArrayList<UUID> members = new ArrayList<UUID>();
@@ -507,9 +507,9 @@ public class Village implements ClaimManager {
         return this.flags.get(VillageFlags.PVP_ENABLED);
     }
 
-    public void setPvpEnabled(boolean isPvpEnabled) {
+    public void setPvpEnabled(boolean pvpEnabled) {
         modified = true; // Indicate that the village has been modified and needs to be saved
-        this.flags.put(VillageFlags.PVP_ENABLED, isPvpEnabled);
+        this.flags.put(VillageFlags.PVP_ENABLED, pvpEnabled);
     }
 
     public void setMobSpawnerBypass(boolean mobSpawnerBypass) {
