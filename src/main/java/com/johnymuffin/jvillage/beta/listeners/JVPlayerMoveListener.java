@@ -125,6 +125,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
                 vPlayer.setAutoClaimingEnabled(false, true); //Disable auto claiming when a player crosses a border to another village
                 String message = plugin.getLanguage().getMessage("movement_village_enter");
                 message = message.replace("%village%", event.getNewVillage().getTownName());
+                message = message.replace("%title%", String.valueOf(event.getNewVillage().rank));
                 event.getPlayer().sendMessage(message);
             } else {
                 String message = plugin.getLanguage().getMessage("movement_wilderness_enter");

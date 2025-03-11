@@ -63,7 +63,9 @@ public class JListCommand extends JVBaseCommand implements CommandExecutor {
 
         String villageList = language.getMessage("command_village_list_use");
 
+        villageList = villageList.replace("%rank%", String.valueOf(village.rank));
         villageList = villageList.replace("%village%", village.getTownName());
+        villageList = villageList.replace("%title%", String.valueOf(village.ownerTitle));
 
         String ownerUsername = this.plugin.getPlayerMap().getPlayer(village.getOwner()).getUsername();
         villageList = villageList.replace("%owner%", ownerUsername);
