@@ -17,9 +17,11 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.johnymuffin.jvillage.beta.models.VillageRanks.*;
+import static com.johnymuffin.jvillage.beta.models.VillageOwnerTitles.*;
+
 public class Village implements ClaimManager {
     private final JVillage plugin;
-    //public boolean isPvpEnabled;
     private String townName;
     private final UUID townUUID;
     private final ArrayList<UUID> members = new ArrayList<UUID>();
@@ -40,9 +42,48 @@ public class Village implements ClaimManager {
 
     private double balance;
 
+    public VillageRanks rank;
+    private String rankName;
+
+    public VillageOwnerTitles ownerTitle;
+    private String ownerTitleName;
+
     private void initializeFlags() {
         for (VillageFlags flag : VillageFlags.values()) {
             flags.put(flag, false);
+        }
+    }
+
+    private void initializeRank(Village village) {
+        //Amount of people in the village
+        int memberCount = village.getMembers().length + village.getAssistants().length + 1; //The 1 is added for the owner
+        if (memberCount <= 1) {
+            village.rank = Tribe;
+            village.ownerTitle = Chief;
+        }
+        if (memberCount >= 11 && memberCount < 21) {
+            village.rank = Settlement;
+            village.ownerTitle = Leader;
+        }
+        if (memberCount >= 21 && memberCount < 51) {
+            village.rank = Town;
+            village.ownerTitle = Mayor;
+        }
+        if (memberCount >= 51 && memberCount < 101) {
+            village.rank = City;
+            village.ownerTitle = Mayor;
+        }
+        if (memberCount >= 101 && memberCount < 501) {
+            village.rank = Metropolis;
+            village.ownerTitle = Mayor;
+        }
+        if (memberCount >= 501 && memberCount < 1001) {
+            village.rank = Megacity;
+            village.ownerTitle = Mayor;
+        }
+        if (memberCount >= 1001) {
+            village.rank = Ecumenopolis;
+            village.ownerTitle = Mayor;
         }
     }
 
@@ -56,6 +97,7 @@ public class Village implements ClaimManager {
         modified = true;
         this.creationTime = System.currentTimeMillis() / 1000L;
         initializeFlags();
+        initializeRank(this);
     }
 
     //Create village from JSON
@@ -109,6 +151,7 @@ public class Village implements ClaimManager {
                 addClaim(vClaim);
             }
             balance = Double.parseDouble(String.valueOf(object.getOrDefault("balance", 0.0)));
+            //rank = determineVillageRank(members.size());
         }
 
         //Load chunk claim metadata
@@ -136,6 +179,11 @@ public class Village implements ClaimManager {
             this.flags.put(VillageFlags.valueOf(String.valueOf(flag)), Boolean.parseBoolean(String.valueOf(flags.get(flag))));
         }
 
+        Village village = (Village) this;
+        initializeRank(village);
+        //Load rank and owner title
+        JSONObject rank = (JSONObject) object.getOrDefault("rank", new JSONObject());
+        JSONObject ownerTitle = (JSONObject) object.getOrDefault("ownerTitle", new JSONObject());
     }
 
     public long getCreationTime() {
@@ -225,6 +273,9 @@ public class Village implements ClaimManager {
         object.put("townSpawn", this.townSpawn.getJsonObject());
         object.put("creationTime", this.creationTime);
         object.put("balance", this.balance);
+
+        object.put("rank", this.rankName);
+        object.put("ownerTitle", this.ownerTitleName);
 
         JSONObject warps = new JSONObject();
         for (Map.Entry<String, VSpawnCords> entry : this.warps.entrySet()) {
@@ -344,6 +395,7 @@ public class Village implements ClaimManager {
     public void addMember(UUID uuid) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         members.add(uuid);
+        initializeRank(this);
     }
 
     public UUID[] getAssistants() {

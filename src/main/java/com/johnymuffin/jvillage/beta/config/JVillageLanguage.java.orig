@@ -37,7 +37,7 @@ public class JVillageLanguage extends Configuration {
 
         map.put("not_in_village", "&4Sorry, you are not in that village");
         map.put("village_owner_leave", "&4Sorry, the owner of a village can't leave it");
-        map.put("movement_village_enter", "&bYou have entered the village of &9%village%");
+        map.put("movement_village_enter", "&bYou have entered the %title% of &9%village%");
         map.put("movement_wilderness_enter", "&bYou have entered the wilderness");
         map.put("unknown_economy_error", "&4Sorry, an unknown economy error occurred");
 
@@ -152,8 +152,8 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_flag_invalid_value", "&cSorry, that is not a valid value for that flag. Use true or false.");
         map.put("command_village_flag_set_success", "&bFlag %flag% has been set to %value%");
 
-        map.put("command_village_info_use", "&6Information for %village%" +
-                "\n&9Owner: &e%owner%" +
+        map.put("command_village_info_use", "&6Information for %rank% %village%" +
+                "\n&9%title%: &e%owner%" +
                 "\n&9Balance: &a$%balance%" +
                 "\n&9Assistants: &c%assistants%" +
                 "\n&9Members: &b%members%" +
@@ -162,8 +162,8 @@ public class JVillageLanguage extends Configuration {
 
 
         map.put("command_village_list_use", "&9--- &bJVillage List &9---" +
-                "\n&6Village: &e%village%" +
-                "\n&3Owner: &b%owner%" +
+                "\n&6%rank%: &e%village%" +
+                "\n&3%title%: &b%owner%" +
                 "\n&5Assistants: &d%assistants%" +
                 "\n&2Members: &a%members%");
 

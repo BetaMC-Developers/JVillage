@@ -12,6 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 import static com.johnymuffin.jvillage.beta.JVUtility.round;
 
 public class JInfoCommand extends JVBaseCommand implements CommandExecutor {
@@ -58,8 +60,14 @@ public class JInfoCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
+        //Get the rank name and corresponding owner title
+        String rankName = String.valueOf(village.rank);
+        String ownerTitle = String.valueOf(village.ownerTitle);
+
         String villageInfo = plugin.getLanguage().getMessage("command_village_info_use");
+        villageInfo = villageInfo.replace("%rank%", rankName);
         villageInfo = villageInfo.replace("%village%", village.getTownName());
+        villageInfo = villageInfo.replace("%title%", ownerTitle);
         villageInfo = villageInfo.replace("%owner%", (PoseidonUUID.getPlayerUsernameFromUUID(village.getOwner()) != null ? PoseidonUUID.getPlayerUsernameFromUUID(village.getOwner()) : ChatColor.RED + "Unknown UUID"));
         villageInfo = villageInfo.replace("%assistants%", village.getAssistants().length + "");
         villageInfo = villageInfo.replace("%members%", village.getMembers().length + "");
@@ -67,6 +75,7 @@ public class JInfoCommand extends JVBaseCommand implements CommandExecutor {
         villageInfo = villageInfo.replace("%balance%", round(village.getBalance(), 2) + "");
         villageInfo = villageInfo.replace("%spawn%", village.getTownSpawn().toString());
         sendWithNewline(commandSender, villageInfo);
+
         return true;
     }
 }

@@ -100,7 +100,7 @@ public class JVMobListener extends EntityListener implements Listener {
                 Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
 
                 //Determine if pvp is allowed
-                if (damagerVillage.isPvpEnabled()) {
+                if (damagerVillage.isPvpEnabled() && victimVillage.isPvpEnabled()) {
                     return;
                 }
                 String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
