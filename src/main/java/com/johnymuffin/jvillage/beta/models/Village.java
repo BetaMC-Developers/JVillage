@@ -57,7 +57,7 @@ public class Village implements ClaimManager {
     private void initializeRank(Village village) {
         //Amount of people in the village
         int memberCount = village.getMembers().length + village.getAssistants().length + 1; //The 1 is added for the owner
-        if (memberCount <= 1) {
+        if (memberCount >= 1) {
             village.rank = Tribe;
             village.ownerTitle = Chief;
         }
