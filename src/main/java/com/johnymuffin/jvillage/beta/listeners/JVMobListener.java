@@ -9,6 +9,7 @@ import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class JVMobListener extends EntityListener implements Listener {
     private JVillage plugin;
@@ -90,6 +92,9 @@ public class JVMobListener extends EntityListener implements Listener {
 
                 //Determine if the victim is in a village
                 if (!(event.getEntity() instanceof Player)) {
+                    if (event.getEntity() instanceof Wolf) {
+                        event.setCancelled(true);
+                    }
                     return;
                 }
                 Player victimPlayer = (Player) event.getEntity();
@@ -131,5 +136,12 @@ public class JVMobListener extends EntityListener implements Listener {
 
         //Kill the hostile mob
         damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Wolf) {
+            event.setCancelled(true);
+        }
     }
 }

@@ -26,6 +26,7 @@ public class Village implements ClaimManager {
     private final UUID townUUID;
     private final ArrayList<UUID> members = new ArrayList<UUID>();
     private final ArrayList<UUID> assistants = new ArrayList<UUID>();
+    public ArrayList<String> districts = new ArrayList<String>();
     private UUID owner;
     private VSpawnCords townSpawn;
     private TreeMap<String, VSpawnCords> warps = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -57,7 +58,7 @@ public class Village implements ClaimManager {
     private void initializeRank(Village village) {
         //Amount of people in the village
         int memberCount = village.getMembers().length + village.getAssistants().length + 1; //The 1 is added for the owner
-        if (memberCount <= 1) {
+        if (memberCount >= 1) {
             village.rank = Tribe;
             village.ownerTitle = Chief;
         }
@@ -96,6 +97,7 @@ public class Village implements ClaimManager {
         this.townSpawn = townSpawn;
         modified = true;
         this.creationTime = System.currentTimeMillis() / 1000L;
+        //this.districts = districts;
         initializeFlags();
         initializeRank(this);
     }
@@ -121,6 +123,11 @@ public class Village implements ClaimManager {
         JSONArray assistants = (JSONArray) object.get("assistants");
         for (Object assistant : assistants) {
             this.assistants.add(UUID.fromString(String.valueOf(assistant)));
+        }
+        JSONArray districts = (JSONArray) object.get("districts");
+        for (Object district : districts) {
+            this.districts.add(String.valueOf(district));
+
         }
         JSONArray claims = (JSONArray) object.get("claims");
         //Loop through worlds
@@ -237,6 +244,8 @@ public class Village implements ClaimManager {
             assistants.add(assistant.toString());
         }
         object.put("assistants", assistants);
+        JSONArray districts = new JSONArray();
+        object.put("districts", districts);
         JSONArray claimsJsonArray = new JSONArray();
         for (String worldName : this.getWorldsWithClaims()) {
             JSONArray worldClaims = new JSONArray();
