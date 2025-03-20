@@ -93,7 +93,10 @@ public class JVMobListener extends EntityListener implements Listener {
                 //Determine if the victim is in a village
                 if (!(event.getEntity() instanceof Player)) {
                     if (event.getEntity() instanceof Wolf) {
-                        event.setCancelled(true);
+                        Village wolfVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
+                        if (!(wolfVillage.isPvpEnabled())) {
+                            event.setCancelled(true);
+                        }
                     }
                     return;
                 }
@@ -141,6 +144,10 @@ public class JVMobListener extends EntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
     public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Wolf) {
+            Village wolfVillage = plugin.getVillageAtLocation(event.getRightClicked().getLocation());
+            if (wolfVillage.isPvpEnabled()) {
+                return;
+            }
             event.setCancelled(true);
         }
     }
