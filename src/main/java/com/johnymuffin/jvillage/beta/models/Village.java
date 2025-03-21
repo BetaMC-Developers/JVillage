@@ -315,8 +315,7 @@ public class Village implements ClaimManager {
     public boolean isInvited(UUID uuid) {
         return this.invited.contains(uuid);
     }
-
-
+    
     public boolean addClaim(VClaim vChunk) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         return plugin.getVillageClaimsArray(this).add(vChunk);
@@ -399,7 +398,6 @@ public class Village implements ClaimManager {
     public UUID[] getMembers() {
         return members.toArray(new UUID[members.size()]);
     }
-
 
     public void addMember(UUID uuid) {
         modified = true; // Indicate that the village has been modified and needs to be saved
