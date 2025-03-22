@@ -26,6 +26,7 @@ public class Village implements ClaimManager {
     private final UUID townUUID;
     private final ArrayList<UUID> members = new ArrayList<UUID>();
     private final ArrayList<UUID> assistants = new ArrayList<UUID>();
+    public ArrayList<String> districts = new ArrayList<String>();
     private UUID owner;
     private VSpawnCords townSpawn;
     private TreeMap<String, VSpawnCords> warps = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -96,6 +97,7 @@ public class Village implements ClaimManager {
         this.townSpawn = townSpawn;
         modified = true;
         this.creationTime = System.currentTimeMillis() / 1000L;
+        //this.districts = districts;
         initializeFlags();
         initializeRank(this);
     }
@@ -121,6 +123,11 @@ public class Village implements ClaimManager {
         JSONArray assistants = (JSONArray) object.get("assistants");
         for (Object assistant : assistants) {
             this.assistants.add(UUID.fromString(String.valueOf(assistant)));
+        }
+        JSONArray districts = (JSONArray) object.get("districts");
+        for (Object district : districts) {
+            this.districts.add(String.valueOf(district));
+
         }
         JSONArray claims = (JSONArray) object.get("claims");
         //Loop through worlds
@@ -237,6 +244,8 @@ public class Village implements ClaimManager {
             assistants.add(assistant.toString());
         }
         object.put("assistants", assistants);
+        JSONArray districts = new JSONArray();
+        object.put("districts", districts);
         JSONArray claimsJsonArray = new JSONArray();
         for (String worldName : this.getWorldsWithClaims()) {
             JSONArray worldClaims = new JSONArray();
@@ -306,8 +315,7 @@ public class Village implements ClaimManager {
     public boolean isInvited(UUID uuid) {
         return this.invited.contains(uuid);
     }
-
-
+    
     public boolean addClaim(VClaim vChunk) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         return plugin.getVillageClaimsArray(this).add(vChunk);
@@ -390,7 +398,6 @@ public class Village implements ClaimManager {
     public UUID[] getMembers() {
         return members.toArray(new UUID[members.size()]);
     }
-
 
     public void addMember(UUID uuid) {
         modified = true; // Indicate that the village has been modified and needs to be saved

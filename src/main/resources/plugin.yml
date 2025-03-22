@@ -112,6 +112,10 @@ permissions:
       jvillage.player.withdraw: true
       jvillage.player.claim.auto: true
       jvillage.player.claim.rectangle: true
+      jvillage.player.district: true
+
+  jvillage.player.district:
+    description: Allows access to JVillage player district command
 
   jvillage.player.balance:
     description: Allows access to JVillage player balance command
@@ -208,6 +212,7 @@ permissions:
   jvillage.player.info:
     description: Allows access to JVillage player info command
     default: true
+
   jvillage.player.flag:
     description: Allows access to JVillage player flag command
     default: true
