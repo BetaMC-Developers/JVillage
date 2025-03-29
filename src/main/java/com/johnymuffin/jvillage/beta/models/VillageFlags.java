@@ -8,4 +8,5 @@ public enum VillageFlags {
     MOB_SPAWNER_BYPASS,
     ASSISTANT_CAN_WITHDRAW,
     PVP_ENABLED,
+    MOBS_CAN_GRIEF,
 }

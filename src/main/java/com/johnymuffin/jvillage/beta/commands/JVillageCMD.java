@@ -46,6 +46,7 @@ public class JVillageCMD extends JVBaseCommand {
         registerCommand(new JFlagCommand(plugin), "flag", "flags", "f");
         registerCommand(new JWithdrawCommand(plugin), "withdraw", "with");
         registerCommand(new JDepositCommand(plugin), "deposit", "dep");
+        registerCommand(new JDistrictCommand(plugin), "district", "dis");
     }
 
     private void registerCommand(CommandExecutor commandExecutor, String... alias) {

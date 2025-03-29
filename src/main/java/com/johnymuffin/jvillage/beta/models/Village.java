@@ -173,7 +173,6 @@ public class Village implements ClaimManager {
                 ChunkClaimSettings settings = new ChunkClaimSettings(this, chunkMetadata, worldName);
                 claimMetadata.add(settings);
             }
-
         }
 
         this.creationTime = Long.parseLong(String.valueOf(object.getOrDefault("creationTime", 1640995200L)));
@@ -234,18 +233,25 @@ public class Village implements ClaimManager {
         JSONObject object = new JSONObject();
         object.put("name", this.townName);
         object.put("owner", this.owner.toString());
+
         JSONArray members = new JSONArray();
         for (UUID member : this.members) {
             members.add(member.toString());
         }
         object.put("members", members);
+
         JSONArray assistants = new JSONArray();
         for (UUID assistant : this.assistants) {
             assistants.add(assistant.toString());
         }
         object.put("assistants", assistants);
+
         JSONArray districts = new JSONArray();
+        for (String district : this.districts) {
+            districts.add(district);
+        }
         object.put("districts", districts);
+
         JSONArray claimsJsonArray = new JSONArray();
         for (String worldName : this.getWorldsWithClaims()) {
             JSONArray worldClaims = new JSONArray();
@@ -373,7 +379,7 @@ public class Village implements ClaimManager {
     }
 
     public boolean canPlayerAlter(Player player) {
-        if (isRandomCanAlter()) {
+        if (canRandomsAlter()) {
             return true;
         }
         if (isMember(player.getUniqueId())) {
@@ -397,6 +403,11 @@ public class Village implements ClaimManager {
 
     public UUID[] getMembers() {
         return members.toArray(new UUID[members.size()]);
+    }
+
+    public void addDistrict(String district) {
+        modified = true;
+        districts.add(district);
     }
 
     public void addMember(UUID uuid) {
@@ -540,7 +551,7 @@ public class Village implements ClaimManager {
     }
 
 
-    public boolean isRandomCanAlter() {
+    public boolean canRandomsAlter() {
         return this.flags.get(VillageFlags.RANDOM_CAN_ALTER);
     }
 
@@ -569,6 +580,15 @@ public class Village implements ClaimManager {
     public void setPvpEnabled(boolean pvpEnabled) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         this.flags.put(VillageFlags.PVP_ENABLED, pvpEnabled);
+    }
+
+    public boolean canMobsGrief() {
+        return this.flags.get(VillageFlags.MOBS_CAN_GRIEF);
+    }
+
+    public void setMobGriefing(boolean mobGriefing) {
+        modified = true; // Indicate that the village has been modified and needs to be saved
+        this.flags.put(VillageFlags.MOBS_CAN_GRIEF, mobGriefing);
     }
 
     public void setMobSpawnerBypass(boolean mobSpawnerBypass) {

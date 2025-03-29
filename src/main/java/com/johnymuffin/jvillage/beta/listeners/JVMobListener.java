@@ -7,16 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class JVMobListener extends EntityListener implements Listener {
@@ -143,11 +138,29 @@ public class JVMobListener extends EntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
     public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Wolf) {
-            Village wolfVillage = plugin.getVillageAtLocation(event.getRightClicked().getLocation());
+            Wolf wolf = (Wolf) event.getRightClicked();
+            Village wolfVillage = plugin.getVillageAtLocation(wolf.getLocation());
             if (wolfVillage.isPvpEnabled()) {
+                return;
+            }
+            if (wolf.getOwner() == event.getPlayer()) {
+                Bukkit.getServer().broadcastMessage("wolf.getOwner() == event.getPlayer()");
                 return;
             }
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    public void onEntityExplode(final EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+        Village village = plugin.getVillageAtLocation(entity.getLocation());
+        if (entity instanceof TNTPrimed) {
+            return;
+        }
+        if (village.canMobsGrief()) {
+            return;
+        }
+        event.setCancelled(true);
     }
 }

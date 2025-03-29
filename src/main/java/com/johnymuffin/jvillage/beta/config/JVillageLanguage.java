@@ -164,6 +164,10 @@ public class JVillageLanguage extends Configuration {
                 "\n&5Assistants: &d%assistants%" +
                 "\n&2Members: &a%members%");
 
+        map.put("command_village_district_list", "&6Districts in %village%" +
+                "\n%districts%");
+        map.put("command_village_district_create", "&bCreated the district %district% in %village%");
+        map.put("command_village_district_claim", "&bClaimed land for %district% in %village%");
         map.put("command_village_flag_list_use", "&9--- &bJVillage Flags&9---" +
                 "%flags%");
 
