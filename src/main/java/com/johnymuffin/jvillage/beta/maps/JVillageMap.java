@@ -1,6 +1,7 @@
 package com.johnymuffin.jvillage.beta.maps;
 
 import com.johnymuffin.jvillage.beta.JVillage;
+import com.johnymuffin.jvillage.beta.models.District;
 import com.johnymuffin.jvillage.beta.models.Village;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

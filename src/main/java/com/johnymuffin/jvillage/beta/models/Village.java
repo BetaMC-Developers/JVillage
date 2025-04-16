@@ -26,6 +26,7 @@ public class Village implements ClaimManager {
     private final UUID townUUID;
     private final ArrayList<UUID> members = new ArrayList<UUID>();
     private final ArrayList<UUID> assistants = new ArrayList<UUID>();
+    public ArrayList<String> districts = new ArrayList<String>();
     private UUID owner;
     private VSpawnCords townSpawn;
     private TreeMap<String, VSpawnCords> warps = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -96,6 +97,7 @@ public class Village implements ClaimManager {
         this.townSpawn = townSpawn;
         modified = true;
         this.creationTime = System.currentTimeMillis() / 1000L;
+        //this.districts = districts;
         initializeFlags();
         initializeRank(this);
     }
@@ -121,6 +123,11 @@ public class Village implements ClaimManager {
         JSONArray assistants = (JSONArray) object.get("assistants");
         for (Object assistant : assistants) {
             this.assistants.add(UUID.fromString(String.valueOf(assistant)));
+        }
+        JSONArray districts = (JSONArray) object.get("districts");
+        for (Object district : districts) {
+            this.districts.add(String.valueOf(district));
+
         }
         JSONArray claims = (JSONArray) object.get("claims");
         //Loop through worlds
@@ -166,7 +173,6 @@ public class Village implements ClaimManager {
                 ChunkClaimSettings settings = new ChunkClaimSettings(this, chunkMetadata, worldName);
                 claimMetadata.add(settings);
             }
-
         }
 
         this.creationTime = Long.parseLong(String.valueOf(object.getOrDefault("creationTime", 1640995200L)));
@@ -227,16 +233,25 @@ public class Village implements ClaimManager {
         JSONObject object = new JSONObject();
         object.put("name", this.townName);
         object.put("owner", this.owner.toString());
+
         JSONArray members = new JSONArray();
         for (UUID member : this.members) {
             members.add(member.toString());
         }
         object.put("members", members);
+
         JSONArray assistants = new JSONArray();
         for (UUID assistant : this.assistants) {
             assistants.add(assistant.toString());
         }
         object.put("assistants", assistants);
+
+        JSONArray districts = new JSONArray();
+        for (String district : this.districts) {
+            districts.add(district);
+        }
+        object.put("districts", districts);
+
         JSONArray claimsJsonArray = new JSONArray();
         for (String worldName : this.getWorldsWithClaims()) {
             JSONArray worldClaims = new JSONArray();
@@ -306,8 +321,7 @@ public class Village implements ClaimManager {
     public boolean isInvited(UUID uuid) {
         return this.invited.contains(uuid);
     }
-
-
+    
     public boolean addClaim(VClaim vChunk) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         return plugin.getVillageClaimsArray(this).add(vChunk);
@@ -365,7 +379,7 @@ public class Village implements ClaimManager {
     }
 
     public boolean canPlayerAlter(Player player) {
-        if (isRandomCanAlter()) {
+        if (canRandomsAlter()) {
             return true;
         }
         if (isMember(player.getUniqueId())) {
@@ -391,6 +405,10 @@ public class Village implements ClaimManager {
         return members.toArray(new UUID[members.size()]);
     }
 
+    public void addDistrict(String district) {
+        modified = true;
+        districts.add(district);
+    }
 
     public void addMember(UUID uuid) {
         modified = true; // Indicate that the village has been modified and needs to be saved
@@ -533,7 +551,7 @@ public class Village implements ClaimManager {
     }
 
 
-    public boolean isRandomCanAlter() {
+    public boolean canRandomsAlter() {
         return this.flags.get(VillageFlags.RANDOM_CAN_ALTER);
     }
 
@@ -562,6 +580,15 @@ public class Village implements ClaimManager {
     public void setPvpEnabled(boolean pvpEnabled) {
         modified = true; // Indicate that the village has been modified and needs to be saved
         this.flags.put(VillageFlags.PVP_ENABLED, pvpEnabled);
+    }
+
+    public boolean canMobsGrief() {
+        return this.flags.get(VillageFlags.MOBS_CAN_GRIEF);
+    }
+
+    public void setMobGriefing(boolean mobGriefing) {
+        modified = true; // Indicate that the village has been modified and needs to be saved
+        this.flags.put(VillageFlags.MOBS_CAN_GRIEF, mobGriefing);
     }
 
     public void setMobSpawnerBypass(boolean mobSpawnerBypass) {

@@ -12,8 +12,10 @@ import com.johnymuffin.jvillage.beta.interfaces.ClaimManager;
 import com.johnymuffin.jvillage.beta.listeners.JVMobListener;
 import com.johnymuffin.jvillage.beta.listeners.JVPlayerAlterListener;
 import com.johnymuffin.jvillage.beta.listeners.JVPlayerMoveListener;
+import com.johnymuffin.jvillage.beta.maps.JDistrictMap;
 import com.johnymuffin.jvillage.beta.maps.JPlayerMap;
 import com.johnymuffin.jvillage.beta.maps.JVillageMap;
+import com.johnymuffin.jvillage.beta.models.District;
 import com.johnymuffin.jvillage.beta.models.VCords;
 import com.johnymuffin.jvillage.beta.models.VSpawnCords;
 import com.johnymuffin.jvillage.beta.models.Village;
@@ -68,6 +70,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 //    private HashMap<String, WorldClaimManager> claims = new HashMap<>();
 //    private ArrayList<VClaim> claims = new ArrayList<>();
     private HashMap<Village, ArrayList<VClaim>> claims = new HashMap<>();
+    private HashMap<District, ArrayList<VClaim>> dClaims = new HashMap<>();
 
     private JVillageLanguage language;
     private JVillageSettings settings;
@@ -78,6 +81,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 
     private JVillageMap villageMap;
     private JPlayerMap playerMap;
+    private JDistrictMap districtMap;
 
     private boolean apiEnabled = false;
 
@@ -304,6 +308,19 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         return null;
     }
 
+    /*
+    public District getDistrictAtLocation(Location location) {
+        VChunk vChunk = new VChunk(location);
+
+        for (VClaim vClaim : getAllClaims()) {
+            if (vClaim.equals(vChunk)) {
+                return getDistrictMap().getDistrict(vClaim.getDistrict());
+            }
+        }
+        return null;
+    }
+    */
+
     public Village getVillageAtLocation(VChunk vChunk) {
         for (VClaim vClaim : getAllClaims()) {
             if (vClaim.equals(vChunk)) {
@@ -505,7 +522,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
             while (!this.villageUUIDAvailable(townUUID)) {
                 townUUID = UUID.randomUUID();
             }
-
 
             UUID townOwnerUUID;
             ArrayList<UUID> assistants = new ArrayList<>();
@@ -924,6 +940,14 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         }
 
         return this.claims.get(village);
+    }
+
+    public ArrayList<VClaim> getDistrictClaimsArray(District district) {
+        if (!this.claims.containsKey(district)) {
+            this.dClaims.put(district, new ArrayList<>());
+        }
+
+        return this.dClaims.get(district);
     }
 
     public boolean villageNameAvailable(String villageName) {

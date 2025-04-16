@@ -7,15 +7,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class JVMobListener extends EntityListener implements Listener {
     private JVillage plugin;
@@ -75,7 +72,6 @@ public class JVMobListener extends EntityListener implements Listener {
             if (damager instanceof CraftArrow) {
                 CraftArrow arrow = (CraftArrow) event.getDamager();
                 damager = (CraftEntity) arrow.getShooter();
-                return;
             }
 
             if (damager instanceof Player) {
@@ -90,6 +86,12 @@ public class JVMobListener extends EntityListener implements Listener {
 
                 //Determine if the victim is in a village
                 if (!(event.getEntity() instanceof Player)) {
+                    if (event.getEntity() instanceof Wolf) {
+                        Village wolfVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
+                        if (!(wolfVillage.isPvpEnabled())) {
+                            event.setCancelled(true);
+                        }
+                    }
                     return;
                 }
                 Player victimPlayer = (Player) event.getEntity();
@@ -131,5 +133,34 @@ public class JVMobListener extends EntityListener implements Listener {
 
         //Kill the hostile mob
         damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Wolf) {
+            Wolf wolf = (Wolf) event.getRightClicked();
+            Village wolfVillage = plugin.getVillageAtLocation(wolf.getLocation());
+            if (wolfVillage.isPvpEnabled()) {
+                return;
+            }
+            if (wolf.getOwner() == event.getPlayer()) {
+                Bukkit.getServer().broadcastMessage("wolf.getOwner() == event.getPlayer()");
+                return;
+            }
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    public void onEntityExplode(final EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+        Village village = plugin.getVillageAtLocation(entity.getLocation());
+        if (entity instanceof TNTPrimed) {
+            return;
+        }
+        if (village.canMobsGrief()) {
+            return;
+        }
+        event.setCancelled(true);
     }
 }
