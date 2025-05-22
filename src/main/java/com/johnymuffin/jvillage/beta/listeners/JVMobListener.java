@@ -6,7 +6,11 @@ import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftSlime;
+import org.bukkit.craftbukkit.entity.CraftMonster;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Cow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -22,13 +26,14 @@ public class JVMobListener extends EntityListener implements Listener {
 
     public JVMobListener(JVillage plugin) {
         this.plugin = plugin;
-        //Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE_BY_ENTITY, this, Event.Priority.Normal, plugin);
+        Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE_BY_ENTITY, this, Event.Priority.Normal, plugin);
     }
 
 
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
     public void onMobSpawnEvent(final CreatureSpawnEvent event) {
-        if (!(event.getEntity() instanceof Monster)) {
+        Entity entity = event.getEntity();
+        if (!(event.getEntity() instanceof Monster || entity instanceof CraftSlime)) {
             return;
         }
         //See if the mob is in a village
@@ -50,14 +55,11 @@ public class JVMobListener extends EntityListener implements Listener {
 //        System.out.println("Blocked a hostile mob from spawning in a village");
     }
 
-
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
     public void onEntityDamageEvent(final EntityDamageEvent preEvent) {
-
         if (!(preEvent instanceof EntityDamageByEntityEvent)) {
             return;
         }
-
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) preEvent;
 
         CraftEntity damager = (CraftEntity) event.getDamager();
@@ -71,7 +73,6 @@ public class JVMobListener extends EntityListener implements Listener {
 
         //If the damager is a hostile mob, continue; Otherwise, whether the attack is allowed is checked
         if (!(damager instanceof Monster)) {
-
             if (damager instanceof CraftArrow) {
                 CraftArrow arrow = (CraftArrow) event.getDamager();
                 damager = (CraftEntity) arrow.getShooter();
@@ -132,4 +133,6 @@ public class JVMobListener extends EntityListener implements Listener {
         //Kill the hostile mob
         damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
     }
+
+
 }

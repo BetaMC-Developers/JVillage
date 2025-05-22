@@ -63,7 +63,7 @@ public class JSetWarpCommand extends JVBaseCommand implements CommandExecutor {
                     .replace("%max%", settings.getConfigInteger("settings.warp.max-name-length.value").toString()));
             return true;
         }
-        
+
         if (village.getWarps().containsKey(warpName)) {
             commandSender.sendMessage(language.getMessage("command_village_setwarp_already_exists"));
             return true;
