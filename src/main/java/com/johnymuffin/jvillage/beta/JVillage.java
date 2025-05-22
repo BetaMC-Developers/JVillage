@@ -161,7 +161,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         //Load Fundamentals players
         //for (UUID uuid : getFundamentals().getPlayerMap().getKnownPlayers()) {
         //    playerMap.getPlayer(uuid);
-         //   playersLoaded++;
+        //   playersLoaded++;
         //}
 
         logger(Level.INFO, "Loaded " + playersLoaded + " players from player data file.");
