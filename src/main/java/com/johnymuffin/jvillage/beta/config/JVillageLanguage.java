@@ -37,7 +37,7 @@ public class JVillageLanguage extends Configuration {
 
         map.put("not_in_village", "&4Sorry, you are not in that village");
         map.put("village_owner_leave", "&4Sorry, the owner of a village can't leave it");
-        map.put("movement_village_enter", "&bYou have entered the %title% of &9%village%");
+        map.put("movement_village_enter", "&bYou have entered the village of &9%village%");
         map.put("movement_wilderness_enter", "&bYou have entered the wilderness");
         map.put("movement_autoselect_enter", "&bYour selected village has been set to &9%village% &bbecause you have entered it");
         map.put("unknown_economy_error", "&4Sorry, an unknown economy error occurred");
@@ -48,9 +48,32 @@ public class JVillageLanguage extends Configuration {
         map.put("build_denied", "&4Sorry, you don't have permission to build in &9%village%");
         map.put("destroy_denied", "&4Sorry, you don't have permission to destroy in &9%village%");
         map.put("ignite_denied", "&4Sorry, you don't have permission to \"ignite\" in &9%village% :(");
-        map.put("pvp_denied", "&4Sorry, PvP is disabled in &9%village%");
 
         map.put("notification_invites", "&bYou have pending village invites! To view, type &9/village invites");
+
+        //Messages for paged /v list for rough prototype
+        map.put("general.page_navigation", "&ePage %current_page%/%total_pages% &7- Use &b/v list <1-%total_pages%> &7to navigate");
+        map.put("village.member_list_header", "&e%village% Member list");
+        map.put("village.owner", "\n&3Owner: &b%owner%");
+        map.put("village.assistants", "\n&5Assistants: &d%assistants%");
+        map.put("village.info_header", "&9--- &bJVillage List &9---");
+        map.put("village.members_header", "&aMembers (Page %page%/%total%):");
+        map.put("multiple_pages", "&ePage %current_page%/%total_pages% &7- Use &b/v list <1-%total_pages%> &7to navigate");
+//      map.put("village.no_regular_members", "\n&2Members:");
+
+        //Working Copy of paged /v list migrated from yml file I was originally using
+        map.put("command_village_list_use",
+                "&9&-------------& &bVillage Info &9&-------------\n" +
+                        "&6Name: &f%village%\n" +
+                        "&3Owner: &f%owner%\n" +
+                        "&5Assistants: &f%assistants%\n" +
+                        "&2Members:\n" +
+                        "&f%members%\n" +
+                        "&9&----------------------------------------");
+
+        //Error handling for new paged /v list
+        map.put("invalid_page_number", "&cInvalid page number.");
+        map.put("too_many_arguments", "&cToo many arguments. Usage: /village list [village] [page]");
 
         //JVillage Admin command
         map.put("command_villageadmin_general_use", "&cSorry, that is invalid. Try /villageadmin (plugin|world|village|player)");
@@ -121,8 +144,7 @@ public class JVillageLanguage extends Configuration {
                 "\n&8- &7/village balance [village] &8- &7Shows village balance" +
                 "\n&8- &7/village deposit [village] [amount] &8- &7Deposit money into village bank" +
                 "\n&8- &7/village warp [name] &8- &7Teleport to a village warp" +
-                "\n&8- &7/village spawn/home &8- &7Teleport to village spawn" +
-                "\n&8- &7/village map &8- &7Shows a map of nearby claims");
+                "\n&8- &7/village spawn/home &8- &7Teleport to village spawn");
 
         map.put("command_village_assistant_help", "&cJVillage Assistant Commands" +
                 "\n&8- &7/village invite [name] &8- &7Invite a player to your selected town" +
@@ -152,25 +174,24 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_flag_invalid_value", "&cSorry, that is not a valid value for that flag. Use true or false.");
         map.put("command_village_flag_set_success", "&bFlag %flag% has been set to %value%");
 
-        map.put("command_village_info_use", "&6Information for %rank% %village%" +
-                "\n&9%title%: &e%owner%" +
+        map.put("command_village_info_use", "&6Information for %village%" +
+                "\n&9Owner: &e%owner%" +
                 "\n&9Balance: &a$%balance%" +
                 "\n&9Assistants: &c%assistants%" +
                 "\n&9Members: &b%members%" +
                 "\n&9Claims: &d%claims%" +
                 "\n&9Spawn: &f%spawn%");
 
-
-        map.put("command_village_list_use", "&9--- &bJVillage List &9---" +
-                "\n&6%rank%: &e%village%" +
-                "\n&3%title%: &b%owner%" +
-                "\n&5Assistants: &d%assistants%" +
-                "\n&2Members: &a%members%");
+        //Deprecated for in favor of paginated /v list
+//        map.put("command_village_list_use", "&9--- &bJVillage List &9---" +
+//                "\n&6Village: &e%village%" +
+//                "\n&3Owner: &b%owner%" +
+//                "\n&5Assistants: &d%assistants%" +
+//                "\n&2Members: &a%members%");
 
         map.put("command_village_flag_list_use", "&9--- &bJVillage Flags&9---" +
                 "%flags%");
 
-        map.put("command_village_map_use", "&9----------- &bJVillage Map &9-----------");
 
         map.put("command_village_select_use", "&bYour selected village is &9%village%");
         map.put("command_village_select_none", "&cYou have no selected village");
