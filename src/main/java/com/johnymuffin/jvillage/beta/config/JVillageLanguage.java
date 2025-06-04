@@ -37,7 +37,7 @@ public class JVillageLanguage extends Configuration {
 
         map.put("not_in_village", "&4Sorry, you are not in that village");
         map.put("village_owner_leave", "&4Sorry, the owner of a village can't leave it");
-        map.put("movement_village_enter", "&bYou have entered the village of &9%village%");
+        map.put("movement_village_enter", "&bYou have entered the %title% of &9%village%");
         map.put("movement_wilderness_enter", "&bYou have entered the wilderness");
         map.put("movement_autoselect_enter", "&bYour selected village has been set to &9%village% &bbecause you have entered it");
         map.put("unknown_economy_error", "&4Sorry, an unknown economy error occurred");
@@ -53,8 +53,8 @@ public class JVillageLanguage extends Configuration {
 
         //Messages for paged /v list for rough prototype
         map.put("general.page_navigation", "&ePage %current_page%/%total_pages% &7- Use &b/v list <1-%total_pages%> &7to navigate");
-        map.put("village.member_list_header", "&e%village% Member list");
-        map.put("village.owner", "\n&3Owner: &b%owner%");
+        map.put("village.member_list_header", "&e%rank% of %village% Member list");
+        map.put("village.owner", "\n&3%title%: &b%owner%");
         map.put("village.assistants", "\n&5Assistants: &d%assistants%");
         map.put("village.info_header", "&9--- &bJVillage List &9---");
         map.put("village.members_header", "&aMembers (Page %page%/%total%):");
@@ -63,9 +63,9 @@ public class JVillageLanguage extends Configuration {
 
         //Working Copy of paged /v list migrated from yml file I was originally using
         map.put("command_village_list_use",
-                "&9&-------------& &bVillage Info &9&-------------\n" +
+                "&9&-------------& &b%rank% Info &9&-------------\n" +
                         "&6Name: &f%village%\n" +
-                        "&3Owner: &f%owner%\n" +
+                        "&3%title%: &f%owner%\n" +
                         "&5Assistants: &f%assistants%\n" +
                         "&2Members:\n" +
                         "&f%members%\n" +
@@ -144,7 +144,8 @@ public class JVillageLanguage extends Configuration {
                 "\n&8- &7/village balance [village] &8- &7Shows village balance" +
                 "\n&8- &7/village deposit [village] [amount] &8- &7Deposit money into village bank" +
                 "\n&8- &7/village warp [name] &8- &7Teleport to a village warp" +
-                "\n&8- &7/village spawn/home &8- &7Teleport to village spawn");
+                "\n&8- &7/village spawn/home &8- &7Teleport to village spawn" +
+                "\n&8- &7/village map &8- &7Shows a map of nearby claims");
 
         map.put("command_village_assistant_help", "&cJVillage Assistant Commands" +
                 "\n&8- &7/village invite [name] &8- &7Invite a player to your selected town" +
@@ -174,8 +175,8 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_flag_invalid_value", "&cSorry, that is not a valid value for that flag. Use true or false.");
         map.put("command_village_flag_set_success", "&bFlag %flag% has been set to %value%");
 
-        map.put("command_village_info_use", "&6Information for %village%" +
-                "\n&9Owner: &e%owner%" +
+        map.put("command_village_info_use", "&6Information for %rank% %village%" +
+                "\n&9%title%: &e%owner%" +
                 "\n&9Balance: &a$%balance%" +
                 "\n&9Assistants: &c%assistants%" +
                 "\n&9Members: &b%members%" +
@@ -184,8 +185,8 @@ public class JVillageLanguage extends Configuration {
 
         //Deprecated for in favor of paginated /v list
 //        map.put("command_village_list_use", "&9--- &bJVillage List &9---" +
-//                "\n&6Village: &e%village%" +
-//                "\n&3Owner: &b%owner%" +
+//                "\n&6%rank%: &e%village%" +
+//                "\n&3%title%: &b%owner%" +
 //                "\n&5Assistants: &d%assistants%" +
 //                "\n&2Members: &a%members%");
 

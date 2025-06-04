@@ -124,6 +124,8 @@ public class JListCommand extends JVBaseCommand implements CommandExecutor {
 
         // Builds the message
         String villageList = language.getMessage("command_village_list_use")
+                .replace("%rank%", String.valueOf(village.rank))
+                .replace("%title%", String.valueOf(village.ownerTitle))
                 .replace("%village%", village.getTownName())
                 .replace("%owner%", ownerUsername)
                 .replace("%assistants%", assistantList)
