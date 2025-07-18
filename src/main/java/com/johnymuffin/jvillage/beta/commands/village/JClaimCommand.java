@@ -136,6 +136,31 @@ public class JClaimCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
+        if (outpostClaim) {
+            int maxOutpostDistance = settings.getConfigInteger("settings.town-claim-outpost.distance");
+
+            boolean withinRange = false;
+            for (VClaim claim : village.getClaims()) {
+                VChunk claimedChunk = claim;
+
+                if (!claimedChunk.getWorldName().equalsIgnoreCase(vChunk.getWorldName())) continue;
+
+                int dx = Math.abs(claimedChunk.getX() - vChunk.getX());
+                int dz = Math.abs(claimedChunk.getZ() - vChunk.getZ());
+
+                if (dx <= maxOutpostDistance && dz <= maxOutpostDistance) {
+                    withinRange = true;
+                    break;
+                }
+            }
+
+            if (!withinRange) {
+                String message = language.getMessage("command_village_claim_outpost_too_far");
+                message = message.replace("%distance%", String.valueOf(maxOutpostDistance));
+                sendWithNewline(commandSender, message);
+                return true;
+            }
+        }
 
         //Check if player has enough money
         double creationCost;
