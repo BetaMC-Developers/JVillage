@@ -30,7 +30,6 @@ public class JVillageSettings extends Configuration {
         generateConfigOption("settings.town-claim-outpost.price.amount", 500);
         generateConfigOption("settings.town-claim-outpost.price.info", "This is the price to claim an outpost. Set to 0 to disable.");
         generateConfigOption("settings.town-claim-outpost.distance", 25);
-        generateConfigOption("settings.town-claim-outpost.distance.info", "The maximum chunk radius allowed from claimed chunks to claim an outpost.");
 
         generateConfigOption("settings.warp.price.amount", 500);
         generateConfigOption("settings.warp.price.info", "This is the price to set a village warp. Set to 0 to disable.");
