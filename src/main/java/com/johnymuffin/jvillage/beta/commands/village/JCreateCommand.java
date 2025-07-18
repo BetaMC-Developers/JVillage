@@ -56,10 +56,9 @@ public class JCreateCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
 
-        //If string doesn't only contain numbers and letters
-        if (!villageName.matches("[a-zA-Z0-9]+")) {
+        if (!villageName.matches("[a-zA-Z0-9 ]+")) {
             commandSender.sendMessage(language.getMessage("command_village_create_invalid_name")
                     .replace("%max%", settings.getConfigInteger("settings.town.max-name-length.value").toString()));
             return true;

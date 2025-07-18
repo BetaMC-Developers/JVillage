@@ -33,7 +33,7 @@ public class JLeaveCommand extends JVBaseCommand implements CommandExecutor {
         VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());
 
         if (strings.length > 0) {
-            String villageName = strings[0];
+            String villageName = strings[0].replace("_", " ");
             Village village = plugin.getVillageMap().getVillage(villageName);
             if (village == null) {
                 commandSender.sendMessage(language.getMessage("village_not_found"));

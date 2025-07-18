@@ -37,7 +37,7 @@ public class JJoinCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
         Village village = plugin.getVillageMap().getVillage(villageName);
         if (village == null) {
             commandSender.sendMessage(language.getMessage("village_not_found"));

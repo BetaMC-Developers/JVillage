@@ -54,7 +54,8 @@ public class JListCommand extends JVBaseCommand implements CommandExecutor {
                         return true;
                     }
                 } catch (NumberFormatException e) {
-                    village = plugin.getVillageMap().getVillage(strings[0]);
+                    String villageNameLookup = strings[0].replace('_', ' ');
+                    village = plugin.getVillageMap().getVillage(villageNameLookup);
                     if (village == null) {
                         commandSender.sendMessage(language.getMessage("village_not_found"));
                         return true;
