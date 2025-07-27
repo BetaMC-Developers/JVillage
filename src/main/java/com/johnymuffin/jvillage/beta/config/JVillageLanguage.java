@@ -255,6 +255,7 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_claim_already_claimed", "&cSorry, that chunk is already claimed");
         map.put("command_village_claim_not_neighboring", "&cSorry, you can only claim chunks that are next to your village" +
                 "\n&cIf you want to make an outpost, use /village claim outpost");
+        map.put("command_village_claim_outpost_too_far","&bOutpost is too far from your village! Must be within %distance% chunks of a claimed area.");
         map.put("command_village_claim_insufficient_funds", "&cInsufficient funds for $%cost% chunk.\n&cDeposit more with /village deposit.");
         map.put("command_village_claim_worldguard_denied", "&cSorry, you can't claim this chunk because it is protected by WorldGuard");
         //Area Claiming Messages
