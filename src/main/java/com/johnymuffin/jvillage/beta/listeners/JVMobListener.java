@@ -4,6 +4,7 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftSlime;
@@ -71,11 +72,33 @@ public class JVMobListener extends EntityListener implements Listener {
         }
 //        System.out.println("Player was damaged");
 
+        Player victimPlayer = (Player) event.getEntity();
+        VPlayer vVictimPlayer = plugin.getPlayerMap().getPlayer(victimPlayer.getUniqueId());
+
         //If the damager is a hostile mob, continue; Otherwise, whether the attack is allowed is checked
         if (!(damager instanceof Monster)) {
+
             if (damager instanceof CraftArrow) {
-                CraftArrow arrow = (CraftArrow) event.getDamager();
-                damager = (CraftEntity) arrow.getShooter();
+                CraftArrow arrow = (CraftArrow) damager;
+                Entity shooter = arrow.getShooter();
+
+                if (shooter instanceof Player) {
+                    Player damagerPlayer = (Player) shooter;
+                    VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
+
+                    // Always check if the victim is in a PvP-disabled village
+                    if (!vVictimPlayer.isLocatedInVillage()) {
+                        return;
+                    }
+
+                    Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
+
+                    if (!victimVillage.isPvpEnabled()) {
+                        String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", victimVillage.getTownName());
+                        damagerPlayer.sendMessage(message);
+                        event.setCancelled(true);
+                    }
+                }
                 return;
             }
 
@@ -84,44 +107,31 @@ public class JVMobListener extends EntityListener implements Listener {
                 //Determine if the damager is in a village
                 Player damagerPlayer = (Player) damager;
                 VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
-                if (!vDamagerPlayer.isLocatedInVillage()) {
-                    return;
-                }
-                Village damagerVillage = plugin.getVillageAtLocation(damager.getLocation());
 
-                //Determine if the victim is in a village
-                if (!(event.getEntity() instanceof Player)) {
+                if (!vDamagerPlayer.isLocatedInVillage() || !vVictimPlayer.isLocatedInVillage()) {
                     return;
                 }
-                Player victimPlayer = (Player) event.getEntity();
-                VPlayer vVictimPlayer = plugin.getPlayerMap().getPlayer(victimPlayer.getUniqueId());
-                if (!vVictimPlayer.isLocatedInVillage()) {
-                    return;
-                }
+
+                Village damagerVillage = plugin.getVillageAtLocation(damager.getLocation());
                 Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
 
-                //Determine if pvp is allowed
-                if (damagerVillage.isPvpEnabled() && victimVillage.isPvpEnabled()) {
+                if (!damagerVillage.isPvpEnabled() || !victimVillage.isPvpEnabled()) {
+                    String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", damagerVillage.getTownName());
+                    damagerPlayer.sendMessage(message);
+                    event.setCancelled(true);
                     return;
                 }
-                String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
-                damagerPlayer.sendMessage(message);
-                event.setCancelled(true);
                 return;
             }
         }
-//        System.out.println("Player was damaged by a hostile mob");
-
-        Player player = (Player) event.getEntity();
-        VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());
 
         //Return if the player is not in a village
-        if (!vPlayer.isLocatedInVillage()) {
+        if (!vVictimPlayer.isLocatedInVillage()) {
             return;
         }
 //        System.out.println("Player was damaged by a hostile mob in a village");
 
-        if (vPlayer.getCurrentlyLocatedIn().isMobsCanSpawn()) {
+        if (vVictimPlayer.getCurrentlyLocatedIn().isMobsCanSpawn()) {
             return;
         }
 
@@ -133,6 +143,4 @@ public class JVMobListener extends EntityListener implements Listener {
         //Kill the hostile mob
         damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
     }
-
-
 }
