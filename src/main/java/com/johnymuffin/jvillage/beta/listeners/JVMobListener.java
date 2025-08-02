@@ -10,10 +10,10 @@ import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftSlime;
 import org.bukkit.craftbukkit.entity.CraftMonster;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Cow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,7 +29,6 @@ public class JVMobListener extends EntityListener implements Listener {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE_BY_ENTITY, this, Event.Priority.Normal, plugin);
     }
-
 
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
     public void onMobSpawnEvent(final CreatureSpawnEvent event) {
@@ -75,6 +74,11 @@ public class JVMobListener extends EntityListener implements Listener {
         Player victimPlayer = (Player) event.getEntity();
         VPlayer vVictimPlayer = plugin.getPlayerMap().getPlayer(victimPlayer.getUniqueId());
 
+        if (damager instanceof Wolf) {
+            Wolf wolf = (Wolf) damager;
+            wolf.setTarget(null);
+        }
+
         //If the damager is a hostile mob, continue; Otherwise, whether the attack is allowed is checked
         if (!(damager instanceof Monster)) {
 
@@ -87,39 +91,48 @@ public class JVMobListener extends EntityListener implements Listener {
                     VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
 
                     // Always check if the victim is in a PvP-disabled village
-                    if (!vVictimPlayer.isLocatedInVillage()) {
+                    if (vDamagerPlayer.isLocatedInVillage()) {
+                        String message = plugin.getLanguage().getMessage("pvp_denied");
+                        damagerPlayer.sendMessage(message);
+                        event.setCancelled(true);
                         return;
                     }
 
-                    Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
-
-                    if (!victimVillage.isPvpEnabled()) {
-                        String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", victimVillage.getTownName());
-                        damagerPlayer.sendMessage(message);
-                        event.setCancelled(true);
+                    if (vVictimPlayer.isLocatedInVillage()) {
+                        Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
+                        if (!victimVillage.isPvpEnabled()) {
+                            String message = plugin.getLanguage().getMessage("pvp_denied");
+                            damagerPlayer.sendMessage(message);
+                            event.setCancelled(true);
+                        }
                     }
                 }
                 return;
             }
 
             if (damager instanceof Player) {
-
-                //Determine if the damager is in a village
                 Player damagerPlayer = (Player) damager;
                 VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
 
-                if (!vDamagerPlayer.isLocatedInVillage() || !vVictimPlayer.isLocatedInVillage()) {
-                    return;
-                }
+                boolean damagerInVillage = vDamagerPlayer.isLocatedInVillage();
+                boolean victimInVillage = vVictimPlayer.isLocatedInVillage();
 
-                Village damagerVillage = plugin.getVillageAtLocation(damager.getLocation());
-                Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
-
-                if (!damagerVillage.isPvpEnabled() || !victimVillage.isPvpEnabled()) {
-                    String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", damagerVillage.getTownName());
+                if (damagerInVillage) {
+                    String message = plugin.getLanguage().getMessage("pvp_denied");
                     damagerPlayer.sendMessage(message);
                     event.setCancelled(true);
                     return;
+                }
+
+                //noinspection ConstantValue
+                if (!damagerInVillage && victimInVillage) {
+                    Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
+                    if (!victimVillage.isPvpEnabled()) {
+                        String message = plugin.getLanguage().getMessage("pvp_denied");
+                        damagerPlayer.sendMessage(message);
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
                 return;
             }
@@ -140,7 +153,8 @@ public class JVMobListener extends EntityListener implements Listener {
         //Cancel the damage event if it is a hostile mob attacking a player in a village where mobs are not allowed to spawn
         event.setCancelled(true);
 
-        //Kill the hostile mob
-        damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport the mob to the void
+        if (!(damager instanceof Wolf) && damager instanceof Monster) {
+            damager.teleport(damager.getLocation().subtract(0, 300, 0)); //Teleport hostile mob to void
+        }
     }
 }

@@ -198,6 +198,10 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_select_none", "&cYou have no selected village");
         map.put("command_village_select_village", "&bYou have selected the village &9%village%");
 
+        map.put("command_village_map_use", "&9--- &bVillage Map&9---");
+
+        map.put("pvp_denied", "&cPvP is turned off in this village!");
+
         map.put("command_village_autoswitch_on", "&bYou have enabled auto switching");
         map.put("command_village_autoswitch_off", "&bYou have disabled auto switching");
         map.put("command_village_autoswitch_use", "&cSorry, that is invalid. Try /village autoswitch [on|off]");
