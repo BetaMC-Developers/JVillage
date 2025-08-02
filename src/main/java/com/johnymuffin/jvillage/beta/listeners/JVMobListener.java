@@ -4,13 +4,10 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftSlime;
-import org.bukkit.craftbukkit.entity.CraftMonster;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -94,7 +91,7 @@ public class JVMobListener extends EntityListener implements Listener {
                     Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
 
                     if (!victimVillage.isPvpEnabled()) {
-                        String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", victimVillage.getTownName());
+                        String message = plugin.getLanguage().getMessage("pvp_not_enabled").replace("%village%", victimVillage.getTownName());
                         damagerPlayer.sendMessage(message);
                         event.setCancelled(true);
                     }
@@ -116,7 +113,7 @@ public class JVMobListener extends EntityListener implements Listener {
                 Village victimVillage = plugin.getVillageAtLocation(event.getEntity().getLocation());
 
                 if (!damagerVillage.isPvpEnabled() || !victimVillage.isPvpEnabled()) {
-                    String message = plugin.getLanguage().getMessage(ChatColor.RED + "PvP is turned off in this village!").replace("%village%", damagerVillage.getTownName());
+                    String message = plugin.getLanguage().getMessage("pvp_not_enabled").replace("%village%", victimVillage.getTownName());
                     damagerPlayer.sendMessage(message);
                     event.setCancelled(true);
                     return;
