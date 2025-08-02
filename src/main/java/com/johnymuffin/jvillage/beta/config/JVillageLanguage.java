@@ -382,6 +382,7 @@ public class JVillageLanguage extends Configuration {
         map.put("autoclaim_claim_success", "&bYou have claimed [%chunk%] for &9%village% &bfor &9$%cost%");
         map.put("autoclaim_unclaim_success", "&bYou have unclaimed [%chunk%] for &9%village% &bfor a &9$%cost% refund");
 
+        map.put("pvp_not_enabled", "&cPvP is turned off in %village%!");
     }
 
     private void loadFile() {
