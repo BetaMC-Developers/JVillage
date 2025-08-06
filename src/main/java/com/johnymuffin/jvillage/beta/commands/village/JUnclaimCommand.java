@@ -7,12 +7,16 @@ import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.chunk.ChunkClaimSettings;
 import com.johnymuffin.jvillage.beta.models.chunk.VChunk;
 import com.johnymuffin.jvillage.beta.models.chunk.VClaim;
+import com.johnymuffin.jvillage.beta.models.VSpawnCords;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import static com.johnymuffin.jvillage.beta.JVUtility.cordsInChunk;
@@ -108,7 +112,29 @@ public class JUnclaimCommand extends JVBaseCommand implements CommandExecutor {
 
         //Unclaim the chunk
         village.removeClaim(new VClaim(village, vChunk));
-        String message = language.getMessage("command_village_unclaim_success").replace("%village%", village.getTownName()).replace("%refund%", String.valueOf(refund));
+
+        // Remove warps in this chunk
+        List<String> warpsToRemove = new ArrayList<>();
+        for (Map.Entry<String, VSpawnCords> entry : village.getWarps().entrySet()) {
+            VSpawnCords cords = entry.getValue();
+            VChunk warpChunk = new VChunk(cords.getLocation());
+            if (warpChunk.equals(vChunk)) {
+                warpsToRemove.add(entry.getKey());
+            }
+        }
+
+        // Remove the warps inside unclaimed chunk and noify village
+        for (String warpName : warpsToRemove) {
+            village.removeWarp(warpName);
+        }
+        if (!warpsToRemove.isEmpty()) {
+            village.broadcastToTown(language.getMessage("command_village_unclaim_warps_removed")
+                    .replace("%warps%", String.join(", ", warpsToRemove)));
+        }
+
+        String message = language.getMessage("command_village_unclaim_success")
+                .replace("%village%", village.getTownName())
+                .replace("%refund%", String.valueOf(refund));
         commandSender.sendMessage(message);
         plugin.logger(Level.INFO, vChunk.toString() + " unclaimed by " + player.getName() + " for " + village.getTownName() + " with a refund of $" + refund);
         return true;

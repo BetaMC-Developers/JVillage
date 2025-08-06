@@ -3,6 +3,7 @@ package com.johnymuffin.jvillage.beta.tasks;
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.config.JVillageLanguage;
 import com.johnymuffin.jvillage.beta.models.VCords;
+import com.johnymuffin.jvillage.beta.models.VSpawnCords;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.chunk.ChunkClaimSettings;
 import com.johnymuffin.jvillage.beta.models.chunk.VChunk;
@@ -11,6 +12,9 @@ import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -57,7 +61,7 @@ public class AutoUnclaimingTask implements Runnable {
             }
 
             // Player is currently located in the wilderness or another village, so can't unclaim
-            if (vPlayer.getCurrentlyLocatedIn() == null || vPlayer.getCurrentlyLocatedIn() != vPlayer.getSelectedVillage()) {
+            if (vPlayer.getCurrentlyLocatedIn() == null || vPlayer.getCurrentlyLocatedIn() != village) {
                 continue;
             }
 
@@ -98,6 +102,25 @@ public class AutoUnclaimingTask implements Runnable {
 
             //Unclaim the chunk
             village.removeClaim(new VClaim(village, vChunk));
+
+            List<String> warpsToRemove = new ArrayList<>();
+            for (Map.Entry<String, VSpawnCords> entry : village.getWarps().entrySet()) {
+                VSpawnCords cords = entry.getValue();
+                VChunk warpChunk = new VChunk(cords.getLocation());
+                if (warpChunk.equals(vChunk)) {
+                    warpsToRemove.add(entry.getKey());
+                }
+            }
+
+            for (String warpName : warpsToRemove) {
+                village.removeWarp(warpName);
+            }
+
+            if (!warpsToRemove.isEmpty()) {
+                village.broadcastToTown(language.getMessage("command_village_unclaim_warps_removed")
+                        .replace("%warps%", String.join(", ", warpsToRemove)));
+            }
+
             String message = language.getMessage("autoclaim_unclaim_success");
             message = message.replace("%village%", village.getTownName());
             message = message.replace("%chunk%", vChunk.toString());
