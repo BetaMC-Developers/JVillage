@@ -60,6 +60,7 @@ public class AutoUnclaimingTask implements Runnable {
                 continue;
             }
 
+            // Player is currently located in the wilderness or another village, so can't unclaim
             if (vPlayer.getCurrentlyLocatedIn() == null || vPlayer.getCurrentlyLocatedIn() != village) {
                 continue;
             }
