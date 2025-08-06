@@ -274,6 +274,7 @@ public class JVillageLanguage extends Configuration {
 
         map.put("command_village_unclaim_not_claimed", "&cSorry, that chunk is not claimed by &9%village%");
         map.put("command_village_unclaim_success", "&bUnclaimed the chunk you are standing in. You have been refunded $%refund%");
+        map.put("command_village_unclaim_warps_removed", "&bThe following warps were removed because their chunks were unclaimed: %warps%");
         map.put("command_village_unclaim_not_assistant", "&cSorry, you are not an assistant or owner of &9%village%&c so you can't unclaim chunks");
         map.put("command_village_unclaim_spawn_block", "&cSorry, you can't unclaim the chunk that contains the village spawn");
         map.put("command_village_claim_autounclaim_on", "&bYou have turned on auto unclaim. You will now automatically unclaim chunks as you walk around");
