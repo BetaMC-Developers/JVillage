@@ -48,6 +48,7 @@ public class JVillageLanguage extends Configuration {
         map.put("build_denied", "&4Sorry, you don't have permission to build in &9%village%");
         map.put("destroy_denied", "&4Sorry, you don't have permission to destroy in &9%village%");
         map.put("ignite_denied", "&4Sorry, you don't have permission to \"ignite\" in &9%village% :(");
+        map.put("pvp_denied", "&cPvP is turned off in %village%!");
 
         map.put("notification_invites", "&bYou have pending village invites! To view, type &9/village invites");
 
@@ -193,14 +194,11 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_flag_list_use", "&9--- &bJVillage Flags&9---" +
                 "%flags%");
 
-
         map.put("command_village_select_use", "&bYour selected village is &9%village%");
         map.put("command_village_select_none", "&cYou have no selected village");
         map.put("command_village_select_village", "&bYou have selected the village &9%village%");
 
         map.put("command_village_map_use", "&9--- &bVillage Map&9---");
-
-        map.put("pvp_denied", "&cPvP is turned off in this village!");
 
         map.put("command_village_autoswitch_on", "&bYou have enabled auto switching");
         map.put("command_village_autoswitch_off", "&bYou have disabled auto switching");
@@ -382,8 +380,6 @@ public class JVillageLanguage extends Configuration {
         map.put("autoclaim_not_enough_money_disabled", "&cSorry, autoclaim has been disabled as you don't have enough money to claim land");
         map.put("autoclaim_claim_success", "&bYou have claimed [%chunk%] for &9%village% &bfor &9$%cost%");
         map.put("autoclaim_unclaim_success", "&bYou have unclaimed [%chunk%] for &9%village% &bfor a &9$%cost% refund");
-
-        map.put("pvp_not_enabled", "&cPvP is turned off in %village%!");
     }
 
     private void loadFile() {
