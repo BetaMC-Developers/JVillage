@@ -4,7 +4,6 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.commands.JVBaseCommand;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,7 +30,7 @@ public class JSelectCommand extends JVBaseCommand implements CommandExecutor {
 
         Player player = (Player) commandSender;
         VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());
-        Village village = null;
+        Village village;
         if (strings.length > 0) {
             String villageName = strings[0];
             if (villageName.equalsIgnoreCase("here")) {
@@ -62,7 +61,7 @@ public class JSelectCommand extends JVBaseCommand implements CommandExecutor {
                 return true;
             } else {
                 String message = language.getMessage("command_village_select_use");
-                message = message.replace("%village%", ChatColor.RED + village.getTownName());
+                message = message.replace("%village%", village.getTownName());
                 commandSender.sendMessage(message);
                 return true;
             }
