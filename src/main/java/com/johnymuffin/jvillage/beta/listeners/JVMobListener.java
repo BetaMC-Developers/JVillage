@@ -60,6 +60,15 @@ public class JVMobListener extends EntityListener implements Listener {
         }
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) preEvent;
 
+        if (event.getEntity() instanceof Wolf) {
+            Wolf wolf = (Wolf) event.getEntity();
+            Village wolfVillage = plugin.getVillageAtLocation(wolf.getLocation());
+            if (wolfVillage != null && !wolfVillage.isPvpEnabled()) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         CraftEntity damager = (CraftEntity) event.getDamager();
 
         //Return if the victim is not a player
