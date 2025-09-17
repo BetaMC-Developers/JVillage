@@ -94,7 +94,7 @@ public class JDepositCommand extends JVBaseCommand implements CommandExecutor {
             //Send message to all online members
             String broadcast = language.getMessage("command_village_deposit_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
             village.broadcastToTown(broadcast);
-            plugin.logger(Level.INFO, "Player " + player.getName() + " deposited $" + amount + " into the bank of" + village.getTownName());
+            plugin.logger(Level.INFO, "Player " + player.getName() + " deposited $" + amount + " into the bank of " + village.getTownName());
         } catch (Throwable e) {
             if (e.getClass().getName().equals("me.zavdav.zcore.util.NoFundsException")) {
                 commandSender.sendMessage(language.getMessage("command_village_deposit_no_funds"));

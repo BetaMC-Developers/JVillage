@@ -110,7 +110,7 @@ public class JWithdrawCommand extends JVBaseCommand implements CommandExecutor {
             //Send message to all online members
             String broadcast = language.getMessage("command_village_withdraw_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
             village.broadcastToTown(broadcast);
-            plugin.logger(Level.INFO, "Player " + player.getName() + " withdrew $" + amount + " from the bank of" + village.getTownName());
+            plugin.logger(Level.INFO, "Player " + player.getName() + " withdrew $" + amount + " from the bank of " + village.getTownName());
         } catch (Throwable e) {
             commandSender.sendMessage(language.getMessage("generic_error"));
         }
