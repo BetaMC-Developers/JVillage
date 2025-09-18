@@ -588,6 +588,14 @@ public class Village implements ClaimManager {
         this.flags.put(VillageFlags.MEMBERS_CAN_INVITE, membersCanInvite);
     }
 
+    public boolean isPreventMushroomSpread() {return this.flags.getOrDefault(VillageFlags.PREVENT_MUSHROOM_SPREAD, false);
+    }
+
+    public void setPreventMushroomSpread(boolean value) {
+        modified = true;
+        this.flags.put(VillageFlags.PREVENT_MUSHROOM_SPREAD, value);
+    }
+
     public int getTotalClaims() {
         return getClaims().size();
     }
