@@ -198,7 +198,7 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_select_none", "&cYou have no selected village");
         map.put("command_village_select_village", "&bYou have selected the village &9%village%");
 
-        map.put("command_village_map_use", "&9--- &bVillage Map&9---");
+        map.put("command_village_map_use", "&9----------- &bJVillage Map &9-----------");
 
         map.put("command_village_autoswitch_on", "&bYou have enabled auto switching");
         map.put("command_village_autoswitch_off", "&bYou have disabled auto switching");
@@ -356,6 +356,7 @@ public class JVillageLanguage extends Configuration {
         map.put("command_village_deposit_not_member", "&cSorry, you are not a member of &9%village%&c so you can't deposit money");
 
         map.put("command_village_withdraw_use", "&cSorry, that is invalid. Try /village withdraw [village] [amount]");
+        map.put("command_village_withdraw_invalid_amount", "&cSorry, that is an invalid amount. Please only use numbers");
         map.put("command_village_withdraw_success", "&bYou have withdrawn &9%amount% &bfrom the bank of &9%village%");
         map.put("command_village_withdraw_broadcast", "&9%player% &bhas withdrawn &9$%amount% &bfrom the bank.");
         map.put("command_village_withdraw_no_funds", "&cSorry, the village doesn't have enough money to withdraw that much");

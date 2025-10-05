@@ -8,6 +8,9 @@ import com.johnymuffin.jvillage.beta.commands.VResidentCommand;
 import com.johnymuffin.jvillage.beta.config.JPlayerData;
 import com.johnymuffin.jvillage.beta.config.JVillageLanguage;
 import com.johnymuffin.jvillage.beta.config.JVillageSettings;
+import com.johnymuffin.jvillage.beta.economy.JVillageEconomy;
+import com.johnymuffin.jvillage.beta.economy.handlers.FundamentalsEconomy;
+import com.johnymuffin.jvillage.beta.economy.handlers.ZCoreEconomy;
 import com.johnymuffin.jvillage.beta.interfaces.ClaimManager;
 import com.johnymuffin.jvillage.beta.listeners.JVMobListener;
 import com.johnymuffin.jvillage.beta.listeners.JVPlayerAlterListener;
@@ -83,8 +86,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 
     private Metrics metrics;
 
-    private boolean zcoreEnabled = false;
-
     @Override
     public void onEnable() {
         plugin = this;
@@ -93,15 +94,16 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         pluginName = pdf.getName();
         log.info("[" + pluginName + "] Is Loading, Version: " + pdf.getVersion());
 
-        //Check for ZCore
-        if (Bukkit.getPluginManager().getPlugin("ZCore") == null) {
-            zcoreEnabled = false;
-            log.warning("[" + pluginName + "] ZCore is not installed or not enabled, economy features will be disabled");
-        } else {
+        //Check for plugin with economy functionality
+        if (Bukkit.getPluginManager().getPlugin("Fundamentals") != null) {
+            JVillageEconomy.setHandler(new FundamentalsEconomy());
+            log.info("[" + pluginName + "] Fundamentals is installed and enabled, economy features will be enabled");
+        } else if (Bukkit.getPluginManager().getPlugin("ZCore") != null) {
+            JVillageEconomy.setHandler(new ZCoreEconomy());
             log.info("[" + pluginName + "] ZCore is installed and enabled, economy features will be enabled");
-            zcoreEnabled = true;
+        } else {
+            log.warning("[" + pluginName + "] No plugins providing economy functionality were found, economy features will be disabled");
         }
-
 
         //Config files
         settings = new JVillageSettings(new File(this.getDataFolder(), "settings.yml"));
@@ -990,7 +992,4 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         return username;
     }
 
-    public boolean isZCoreEnabled() {
-        return zcoreEnabled;
-    }
 }

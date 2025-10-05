@@ -3,10 +3,11 @@ package com.johnymuffin.jvillage.beta.commands.village;
 import com.johnymuffin.jvillage.beta.JVUtility;
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.commands.JVBaseCommand;
+import com.johnymuffin.jvillage.beta.economy.JVillageEconomy;
+import com.johnymuffin.jvillage.beta.economy.TransactionResult;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.VillageFlags;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
-import me.zavdav.zcore.api.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -96,25 +97,26 @@ public class JWithdrawCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
-        if (!this.plugin.isZCoreEnabled()) {
+        if (!JVillageEconomy.isEconomyEnabled()) {
             sendWithNewline(commandSender, language.getMessage("economy_disabled"));
             return true;
         }
 
         //Attempt to add money to player
-        try {
-            Economy.addBalance(player.getUniqueId(), BigDecimal.valueOf(amount));
-            village.subtractBalance(amount);
-            String message = language.getMessage("command_village_withdraw_success").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName());
-            commandSender.sendMessage(message);
-            //Send message to all online members
-            String broadcast = language.getMessage("command_village_withdraw_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
-            village.broadcastToTown(broadcast);
-            plugin.logger(Level.INFO, "Player " + player.getName() + " withdrew $" + amount + " from the bank of " + village.getTownName());
-        } catch (Throwable e) {
-            commandSender.sendMessage(language.getMessage("generic_error"));
+        TransactionResult result = JVillageEconomy.getHandler().addMoney(player, amount);
+        switch (result) {
+            case SUCCESS:
+                village.subtractBalance(amount);
+                String message = language.getMessage("command_village_withdraw_success").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName());
+                commandSender.sendMessage(message);
+                //Send message to all online members
+                String broadcast = language.getMessage("command_village_withdraw_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
+                village.broadcastToTown(broadcast);
+                plugin.logger(Level.INFO, "Player " + player.getName() + " withdrew $" + amount + " from the bank of " + village.getTownName());
+                return true;
+            default:
+                commandSender.sendMessage(language.getMessage("generic_error"));
+                return true;
         }
-
-        return true;
     }
 }

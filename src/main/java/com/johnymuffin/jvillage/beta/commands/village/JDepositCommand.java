@@ -3,9 +3,10 @@ package com.johnymuffin.jvillage.beta.commands.village;
 import com.johnymuffin.jvillage.beta.JVUtility;
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.commands.JVBaseCommand;
+import com.johnymuffin.jvillage.beta.economy.JVillageEconomy;
+import com.johnymuffin.jvillage.beta.economy.TransactionResult;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
-import me.zavdav.zcore.api.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -80,29 +81,29 @@ public class JDepositCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
-        if (!this.plugin.isZCoreEnabled()) {
+        if (!JVillageEconomy.isEconomyEnabled()) {
             sendWithNewline(commandSender, language.getMessage("economy_disabled"));
             return true;
         }
 
         //Attempt to withdraw money from player
-        try {
-            Economy.subtractBalance(player.getUniqueId(), BigDecimal.valueOf(amount));
-            village.addBalance(amount);
-            String message = language.getMessage("command_village_deposit_success").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName());
-            commandSender.sendMessage(message);
-            //Send message to all online members
-            String broadcast = language.getMessage("command_village_deposit_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
-            village.broadcastToTown(broadcast);
-            plugin.logger(Level.INFO, "Player " + player.getName() + " deposited $" + amount + " into the bank of " + village.getTownName());
-        } catch (Throwable e) {
-            if (e.getClass().getName().equals("me.zavdav.zcore.util.NoFundsException")) {
+        TransactionResult result = JVillageEconomy.getHandler().subtractMoney(player, amount);
+        switch (result) {
+            case SUCCESS:
+                village.addBalance(amount);
+                String message = language.getMessage("command_village_deposit_success").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName());
+                commandSender.sendMessage(message);
+                //Send message to all online members
+                String broadcast = language.getMessage("command_village_deposit_broadcast").replace("%amount%", String.valueOf(amount)).replace("%village%", village.getTownName()).replace("%player%", player.getName());
+                village.broadcastToTown(broadcast);
+                plugin.logger(Level.INFO, "Player " + player.getName() + " deposited $" + amount + " into the bank of " + village.getTownName());
+                return true;
+            case INSUFFICIENT_FUNDS:
                 commandSender.sendMessage(language.getMessage("command_village_deposit_no_funds"));
-            } else {
+                return true;
+            default:
                 commandSender.sendMessage(language.getMessage("generic_error"));
-            }
+                return true;
         }
-
-        return true;
     }
 }

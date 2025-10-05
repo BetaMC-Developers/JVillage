@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>BetaMC</groupId>
+    <groupId>com.johnymuffin</groupId>
     <artifactId>JVillage</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -37,12 +37,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
     </repositories>
 
 
@@ -82,9 +76,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.zavdav</groupId>
-            <artifactId>ZCore</artifactId>
-            <version>367d509</version>
+            <groupId>me.zavdav</groupId>
+            <artifactId>zcore</artifactId>
+            <version>0.22.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/zcore-0.22.1.jar</systemPath>
         </dependency>
 
         <dependency>

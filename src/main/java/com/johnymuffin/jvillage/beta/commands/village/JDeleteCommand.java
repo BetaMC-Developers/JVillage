@@ -2,12 +2,13 @@ package com.johnymuffin.jvillage.beta.commands.village;
 
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.commands.JVBaseCommand;
+import com.johnymuffin.jvillage.beta.economy.JVillageEconomy;
+import com.johnymuffin.jvillage.beta.economy.TransactionResult;
 import com.johnymuffin.jvillage.beta.models.VCords;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.chunk.ChunkClaimSettings;
 import com.johnymuffin.jvillage.beta.models.chunk.VClaim;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
-import me.zavdav.zcore.api.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -76,15 +77,17 @@ public class JDeleteCommand extends JVBaseCommand implements CommandExecutor {
             }
         }
 
-        if (refundAmount > 0 && plugin.isZCoreEnabled()) {
-            try {
-                Economy.addBalance(player.getUniqueId(), BigDecimal.valueOf(refundAmount));
-                this.plugin.logger(Level.INFO, "Successfully refunded $" + refundAmount + " to " + player.getName() + " for deleting village " + village.getTownName());
-            } catch (Throwable e) {
-                this.plugin.logger(Level.WARNING, "Failed to refund $" + refundAmount + " to " + player.getName() + " for deleting village " + village.getTownName());
-                String message = language.getMessage("generic_error");
-                commandSender.sendMessage(message);
-                return true;
+        if (refundAmount > 0 && JVillageEconomy.isEconomyEnabled()) {
+            TransactionResult result = JVillageEconomy.getHandler().addMoney(player, refundAmount);
+            switch (result) {
+                case SUCCESS:
+                    this.plugin.logger(Level.INFO, "Successfully refunded $" + refundAmount + " to " + player.getName() + " for deleting village " + village.getTownName());
+                    break;
+                default:
+                    this.plugin.logger(Level.WARNING, "Failed to refund $" + refundAmount + " to " + player.getName() + " for deleting village " + village.getTownName());
+                    String message = language.getMessage("generic_error");
+                    commandSender.sendMessage(message);
+                    return true;
             }
         }
 
