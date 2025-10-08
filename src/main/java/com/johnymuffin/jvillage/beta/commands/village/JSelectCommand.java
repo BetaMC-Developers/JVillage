@@ -32,7 +32,7 @@ public class JSelectCommand extends JVBaseCommand implements CommandExecutor {
         VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());
         Village village;
         if (strings.length > 0) {
-            String villageName = strings[0];
+            String villageName = strings[0].replace("_", " ");
             if (villageName.equalsIgnoreCase("here")) {
                 village = vPlayer.getCurrentlyLocatedIn();
             } else {
