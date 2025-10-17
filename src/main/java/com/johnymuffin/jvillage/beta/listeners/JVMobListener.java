@@ -4,10 +4,10 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftSlime;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -88,55 +88,27 @@ public class JVMobListener extends EntityListener implements Listener {
 
         //If the damager is a hostile mob, continue; Otherwise, whether the attack is allowed is checked
         if (!(damager instanceof Monster)) {
+            Player damagerPlayer = null;
+            if (damager instanceof Player) {
+                damagerPlayer = (Player) damager;
+            } else if (damager instanceof Arrow && ((Arrow) damager).getShooter() instanceof Player) {
+                damagerPlayer = (Player) ((Arrow) damager).getShooter();
+            }
 
-            if (damager instanceof CraftArrow) {
-                CraftArrow arrow = (CraftArrow) damager;
-                Entity shooter = arrow.getShooter();
+            if (damagerPlayer != null) {
+                VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
 
-                if (shooter instanceof Player) {
-                    Player damagerPlayer = (Player) shooter;
-                    VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
-
-                    // Always check if the victim is in a PvP-disabled village
-                    if (vDamagerPlayer.isLocatedInVillage()) {
-                        Village damagerVillage = plugin.getVillageAtLocation(damagerPlayer.getLocation());
+                if (vDamagerPlayer.isLocatedInVillage()) {
+                    Village damagerVillage = plugin.getVillageAtLocation(damagerPlayer.getLocation());
+                    if (!damagerVillage.isPvpEnabled()) {
                         String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", damagerVillage.getTownName());
                         damagerPlayer.sendMessage(message);
                         event.setCancelled(true);
                         return;
                     }
-
-                    if (vVictimPlayer.isLocatedInVillage()) {
-                        Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
-                        if (!victimVillage.isPvpEnabled()) {
-                            String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", victimVillage.getTownName());
-                            damagerPlayer.sendMessage(message);
-                            event.setCancelled(true);
-                        }
-
-                    }
-                }
-                return;
-            }
-
-            if (damager instanceof Player) {
-                Player damagerPlayer = (Player) damager;
-                VPlayer vDamagerPlayer = plugin.getPlayerMap().getPlayer(damagerPlayer.getUniqueId());
-
-                boolean damagerInVillage = vDamagerPlayer.isLocatedInVillage();
-                boolean victimInVillage = vVictimPlayer.isLocatedInVillage();
-
-                if (damagerInVillage) {
-                    Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
-                    String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", victimVillage.getTownName());
-
-                    damagerPlayer.sendMessage(message);
-                    event.setCancelled(true);
-                    return;
                 }
 
-                //noinspection ConstantValue
-                if (!damagerInVillage && victimInVillage) {
+                if (vVictimPlayer.isLocatedInVillage()) {
                     Village victimVillage = plugin.getVillageAtLocation(victimPlayer.getLocation());
                     if (!victimVillage.isPvpEnabled()) {
                         String message = plugin.getLanguage().getMessage("pvp_denied").replace("%village%", victimVillage.getTownName());
