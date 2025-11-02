@@ -171,7 +171,7 @@ public class JVilageAdminCMD extends JVBaseCommand {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
 
         Village village = plugin.getVillageMap().getVillage(villageName);
 
@@ -207,7 +207,7 @@ public class JVilageAdminCMD extends JVBaseCommand {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
         String playerName = strings[1];
 
         Village village = plugin.getVillageMap().getVillage(villageName);
@@ -268,7 +268,7 @@ public class JVilageAdminCMD extends JVBaseCommand {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
         String playerName = strings[1];
 
         Village village = plugin.getVillageMap().getVillage(villageName);
@@ -331,7 +331,7 @@ public class JVilageAdminCMD extends JVBaseCommand {
             commandSender.sendMessage(language.getMessage("command_villageadmin_village_add_use"));
             return true;
         }
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
         String playerName = strings[1];
 
         Village village = plugin.getVillageMap().getVillage(villageName);

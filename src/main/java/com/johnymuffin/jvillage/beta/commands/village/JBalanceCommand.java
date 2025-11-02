@@ -36,7 +36,7 @@ public class JBalanceCommand extends JVBaseCommand implements CommandExecutor {
 
             village = vPlayer.getSelectedVillage();
         } else {
-            String villageName = strings[0];
+            String villageName = strings[0].replace("_", " ");
             village = plugin.getVillageMap().getVillage(villageName);
         }
 
