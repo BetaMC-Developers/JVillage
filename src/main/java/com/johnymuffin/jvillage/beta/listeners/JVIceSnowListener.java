@@ -20,9 +20,8 @@ public class JVIceSnowListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
     public void onBlockFade(BlockFadeEvent event) {
         Block block = event.getBlock();
-        String type = block.getType().name();
-
-        if (!type.contains("ICE") && !type.contains("SNOW")) {
+        int id = block.getTypeId();
+        if (id != 78 && id != 79) {
             return;
         }
 
