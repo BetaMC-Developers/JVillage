@@ -12,9 +12,7 @@ import com.johnymuffin.jvillage.beta.economy.JVillageEconomy;
 import com.johnymuffin.jvillage.beta.economy.handlers.FundamentalsEconomy;
 import com.johnymuffin.jvillage.beta.economy.handlers.ZCoreEconomy;
 import com.johnymuffin.jvillage.beta.interfaces.ClaimManager;
-import com.johnymuffin.jvillage.beta.listeners.JVMobListener;
-import com.johnymuffin.jvillage.beta.listeners.JVPlayerAlterListener;
-import com.johnymuffin.jvillage.beta.listeners.JVPlayerMoveListener;
+import com.johnymuffin.jvillage.beta.listeners.*;
 import com.johnymuffin.jvillage.beta.maps.JPlayerMap;
 import com.johnymuffin.jvillage.beta.maps.JVillageMap;
 import com.johnymuffin.jvillage.beta.models.VCords;
@@ -182,6 +180,10 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 
         JVMobListener mobListener = new JVMobListener(this);
         Bukkit.getPluginManager().registerEvents(mobListener, plugin);
+
+        getServer().getPluginManager().registerEvents(new JVMushroomListener(this), this);
+
+        getServer().getPluginManager().registerEvents(new JVIceSnowListener(this), this);
 
         //Register API routes if JWebAPI is installed
         if (Bukkit.getPluginManager().getPlugin("JWebAPI") != null) {

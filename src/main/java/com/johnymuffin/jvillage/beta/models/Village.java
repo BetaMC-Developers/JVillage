@@ -588,6 +588,22 @@ public class Village implements ClaimManager {
         this.flags.put(VillageFlags.MEMBERS_CAN_INVITE, membersCanInvite);
     }
 
+    public boolean isPreventMushroomSpread() {return this.flags.getOrDefault(VillageFlags.PREVENT_MUSHROOM_SPREAD, false);
+    }
+
+    public void setPreventMushroomSpread(boolean value) {
+        modified = true;
+        this.flags.put(VillageFlags.PREVENT_MUSHROOM_SPREAD, value);
+    }
+
+    public boolean isPreventIceSnowMelt() {return this.flags.getOrDefault(VillageFlags.PREVENT_ICE_SNOW_MELT, false);
+    }
+
+    public void setPreventIceSnowMelt(boolean value) {
+        modified = true;
+        this.flags.put(VillageFlags.PREVENT_ICE_SNOW_MELT, value);
+    }
+
     public int getTotalClaims() {
         return getClaims().size();
     }
