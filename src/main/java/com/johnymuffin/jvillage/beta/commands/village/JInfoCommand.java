@@ -32,7 +32,7 @@ public class JInfoCommand extends JVBaseCommand implements CommandExecutor {
         Village village = null;
         boolean selected = false;
         if (strings.length > 0) {
-            String villageName = strings[0];
+            String villageName = strings[0].replace("_", " ");
             if (villageName.equalsIgnoreCase("here") && commandSender instanceof Player) {
                 Player player = (Player) commandSender;
                 VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());

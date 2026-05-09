@@ -49,9 +49,9 @@ public class JRenameCommand extends JVBaseCommand implements CommandExecutor {
             return true;
         }
 
-        String villageName = strings[0];
+        String villageName = strings[0].replace("_", " ");
 
-        if (!villageName.matches("[a-zA-Z0-9]+")) {
+        if (!villageName.matches("[a-zA-Z0-9 ]+")) {
             commandSender.sendMessage(language.getMessage("command_village_rename_invalid_name")
                     .replace("%max%", settings.getConfigInteger("settings.town.max-name-length.value").toString()));
             return true;
