@@ -4,28 +4,27 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.events.PlayerSwitchTownEvent;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
+import com.legacyminecraft.poseidon.event.player.PlayerChangedWorldEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
 import java.util.ArrayList;
 
-public class JVPlayerMoveListener extends CustomEventListener implements Listener {
+public class JVPlayerMoveListener implements Listener {
     private JVillage plugin;
 
     public JVPlayerMoveListener(JVillage plugin) {
         this.plugin = plugin;
-
-        //Register old style listeners
-        Bukkit.getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, this, Event.Priority.Normal, plugin);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMoveEvent(final PlayerMoveEvent event) {
 //        System.out.println("Player moved");
         //If a player has changed block
@@ -35,7 +34,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(final PlayerTeleportEvent event) {
         updatePlayerLocation(event.getPlayer(), event.getTo());
 
@@ -45,7 +44,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
         vPlayer.setAutoUnclaimingEnabled(false, true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawnEvent(final PlayerRespawnEvent event) {
         updatePlayerLocation(event.getPlayer(), event.getRespawnLocation());
 
@@ -55,7 +54,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
         vPlayer.setAutoUnclaimingEnabled(false, true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerJoinEvent(final PlayerJoinEvent event) {
         updatePlayerLocation(event.getPlayer(), event.getPlayer().getLocation());
 
@@ -80,7 +79,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
     }
 
     //TODO: This might not be needed, decide if it is or not
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Highest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerChangedWorldEvent(final PlayerChangedWorldEvent event) {
         updatePlayerLocation(event.getPlayer(), event.getPlayer().getLocation());
 
@@ -105,6 +104,7 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
         plugin.getPlayerMap().getPlayer(player.getUniqueId()).setCurrentlyLocatedIn(player, village);
     }
 
+    @EventHandler
     public void onPlayerSwitchTownEvent(final PlayerSwitchTownEvent event) {
         //Autoswitch to the new village
         boolean switchMessageSent = false;
@@ -149,15 +149,6 @@ public class JVPlayerMoveListener extends CustomEventListener implements Listene
 //
 //                }
             }
-        }
-    }
-
-    //This isn't using event handlers because it's a custom event. Poseidon needs to be updated to support event handlers for custom events.
-    //TODO: Update Poseidon to support custom events correctly (event handlers). Currently, when other custom events fire, this event will fire as well causing argument type mismatch exceptions.
-    public void onCustomEvent(final Event preEvent) {
-        //Forward event to the correct method
-        if ((preEvent instanceof PlayerSwitchTownEvent)) {
-            onPlayerSwitchTownEvent((PlayerSwitchTownEvent) preEvent);
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.johnymuffin.jvillage.beta.models;
 
+import com.google.gson.JsonObject;
 import com.johnymuffin.jvillage.beta.JVUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.json.simple.JSONObject;
 
 public class VSpawnCords extends VCords {
 
@@ -18,26 +18,26 @@ public class VSpawnCords extends VCords {
         this(location.getBlockX(), location.getBlockY(), location.getBlockZ(), JVUtility.closestYaw(location.getYaw()), location.getWorld().getName());
     }
 
-    public VSpawnCords(JSONObject jsonObject) {
-        super(Long.valueOf(String.valueOf(jsonObject.get("x"))).intValue(),
-                Long.valueOf(String.valueOf(jsonObject.get("y"))).intValue(),
-                Long.valueOf(String.valueOf(jsonObject.get("z"))).intValue(),
-                (String) jsonObject.get("world"));
-        if (jsonObject.get("yaw") == null) {
-            yaw = 0;
+    public VSpawnCords(JsonObject jsonObject) {
+        super(jsonObject.get("x").getAsInt(),
+                jsonObject.get("y").getAsInt(),
+                jsonObject.get("z").getAsInt(),
+                jsonObject.get("world").getAsString());
+        if (jsonObject.has("yaw")) {
+            yaw = jsonObject.get("yaw").getAsInt();
         } else {
-            yaw = Long.valueOf(String.valueOf(jsonObject.get("yaw"))).intValue();
+            yaw = 0;
         }
     }
 
     @Override
-    public JSONObject getJsonObject() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("x", super.getX());
-        jsonObject.put("y", super.getY());
-        jsonObject.put("z", super.getZ());
-        jsonObject.put("yaw", yaw);
-        jsonObject.put("world", super.getWorldName());
+    public JsonObject getJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("x", super.getX());
+        jsonObject.addProperty("y", super.getY());
+        jsonObject.addProperty("z", super.getZ());
+        jsonObject.addProperty("yaw", yaw);
+        jsonObject.addProperty("world", super.getWorldName());
         return jsonObject;
     }
 

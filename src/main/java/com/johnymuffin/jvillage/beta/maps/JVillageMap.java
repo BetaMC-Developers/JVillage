@@ -1,10 +1,9 @@
 package com.johnymuffin.jvillage.beta.maps;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -136,14 +135,13 @@ public class JVillageMap {
         saveVillage(village);
     }
 
-    private Village loadVillage(UUID villageUUID) throws IOException, ParseException {
+    private Village loadVillage(UUID villageUUID) throws IOException {
         //Load Village from file
         File file = new File(plugin.getDataFolder(), "villages" + File.separator + villageUUID.toString() + ".json");
         if (!file.exists()) {
             throw new RuntimeException("Attempted to load village data for " + villageUUID + " but no file was found.");
         }
-        JSONParser parser = new JSONParser();
-        JSONObject villageData = (JSONObject) parser.parse(new FileReader(file));
+        JsonObject villageData = (JsonObject) JsonParser.parseReader(new FileReader(file));
         return new Village(plugin, villageUUID, villageData);
     }
 
@@ -151,7 +149,7 @@ public class JVillageMap {
         //Save Village to file
         File fileO = new File(plugin.getDataFolder(), "villages" + File.separator + village.getTownUUID().toString() + ".json");
         try (FileWriter file = new FileWriter(fileO)) {
-            file.write(village.getJsonObject().toJSONString());
+            file.write(village.getJsonObject().toString());
             file.flush();
             village.setModified(false); //Reset modified flag
         } catch (IOException e) {

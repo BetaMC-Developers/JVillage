@@ -3,8 +3,12 @@ package com.johnymuffin.jvillage.beta.events;
 import com.johnymuffin.jvillage.beta.models.Village;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 public class PlayerLeaveVillageEvent extends Event {
+
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
     private Village village;
 
     private Player player;
@@ -21,5 +25,14 @@ public class PlayerLeaveVillageEvent extends Event {
 
     private Village getVillage() {
         return village;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return HANDLER_LIST;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
     }
 }

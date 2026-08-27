@@ -1,8 +1,8 @@
 package com.johnymuffin.jvillage.beta.models;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.json.simple.JSONObject;
 
 import java.util.Objects;
 
@@ -25,19 +25,19 @@ public class VCords {
     }
 
     //Create from JSON
-    public VCords(JSONObject jsonObject) {
-        this.x = Long.valueOf(String.valueOf(jsonObject.get("x"))).intValue();
-        this.y = Long.valueOf(String.valueOf(jsonObject.get("y"))).intValue();
-        this.z = Long.valueOf(String.valueOf(jsonObject.get("z"))).intValue();
-        this.worldName = (String) jsonObject.get("world");
+    public VCords(JsonObject jsonObject) {
+        this.x = jsonObject.get("x").getAsInt();
+        this.y = jsonObject.get("y").getAsInt();
+        this.z = jsonObject.get("z").getAsInt();
+        this.worldName = jsonObject.get("world").getAsString();
     }
 
-    public JSONObject getJsonObject() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("x", x);
-        jsonObject.put("y", y);
-        jsonObject.put("z", z);
-        jsonObject.put("world", worldName);
+    public JsonObject getJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("x", x);
+        jsonObject.addProperty("y", y);
+        jsonObject.addProperty("z", z);
+        jsonObject.addProperty("world", worldName);
         return jsonObject;
     }
 
@@ -51,7 +51,7 @@ public class VCords {
         if (obj == this) return true;
         if (!(obj instanceof VCords)) return false;
         VCords cords = (VCords) obj;
-        return this.worldName == cords.worldName && this.x == cords.x && this.y == cords.y && this.z == cords.z;
+        return Objects.equals(this.worldName, cords.worldName) && this.x == cords.x && this.y == cords.y && this.z == cords.z;
     }
 
     @Override

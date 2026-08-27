@@ -1,12 +1,11 @@
 package com.johnymuffin.jvillage.beta.routes.api.v1;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.johnymuffin.jvillage.beta.models.Village;
-import com.johnymuffin.jvillage.beta.models.VillageFlags;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import com.johnymuffin.jvillage.beta.routes.JVillageNormalRoute;
 import org.bukkit.Bukkit;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -38,54 +37,54 @@ public class JVillageGetPlayerRoute extends JVillageNormalRoute {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this.jVillage, () -> {
                 try {
                     UUID playerUUID = UUID.fromString(uuid);
-                    JSONObject playerJSON = new JSONObject();
+                    JsonObject playerJSON = new JsonObject();
                     if (!jVillage.getPlayerData().isPlayerKnown(playerUUID)) {
-                        playerJSON.put("found", false);
-                        playerJSON.put("error", false);
+                        playerJSON.addProperty("found", false);
+                        playerJSON.addProperty("error", false);
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
-                        response.getWriter().write(playerJSON.toJSONString());
+                        response.getWriter().write(playerJSON.toString());
                         ctxt.complete();
                         return;
                     }
-                    playerJSON.put("found", true);
+                    playerJSON.addProperty("found", true);
                     VPlayer player = jVillage.getPlayerMap().getPlayer(playerUUID);
 
-                    playerJSON.put("name", player.getUsername());
-                    playerJSON.put("uuid", player.getUUID().toString());
+                    playerJSON.addProperty("name", player.getUsername());
+                    playerJSON.addProperty("uuid", player.getUUID().toString());
 
-                    JSONObject villageJSON = new JSONObject();
+                    JsonObject villageJSON = new JsonObject();
 
                     //Get all villages player owns
-                    JSONArray villagesOwned = new JSONArray();
+                    JsonArray villagesOwned = new JsonArray();
                     for (Village village : player.getTownsOwned()) {
                         villagesOwned.add(village.getTownUUID().toString());
                     }
-                    villageJSON.put("owner", villagesOwned);
+                    villageJSON.add("owner", villagesOwned);
 
                     //Get all villages player assists
-                    JSONArray villagesAssisted = new JSONArray();
+                    JsonArray villagesAssisted = new JsonArray();
                     for (Village village : player.getTownsAssistantOf()) {
                         villagesAssisted.add(village.getTownUUID().toString());
                     }
-                    villageJSON.put("assistant", villagesAssisted);
+                    villageJSON.add("assistant", villagesAssisted);
 
                     //Get all villages player is a member of
-                    JSONArray villagesMember = new JSONArray();
+                    JsonArray villagesMember = new JsonArray();
                     for (Village village : player.getTownsMemberOf()) {
                         villagesMember.add(village.getTownUUID().toString());
                     }
-                    villageJSON.put("member", villagesMember);
+                    villageJSON.add("member", villagesMember);
 
-                    playerJSON.put("villages", villageJSON);
+                    playerJSON.add("villages", villageJSON);
 
-                    playerJSON.put("error", false);
+                    playerJSON.addProperty("error", false);
 
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(playerJSON.toJSONString());
+                    response.getWriter().write(playerJSON.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

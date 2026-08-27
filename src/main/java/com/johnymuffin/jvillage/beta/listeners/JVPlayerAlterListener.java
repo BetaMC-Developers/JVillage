@@ -4,10 +4,9 @@ import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.chunk.VChunk;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -28,7 +27,7 @@ public class JVPlayerAlterListener implements Listener {
     }
 
     //Lowest priority so that other plugins can cancel this event
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockPlaceEvent(final BlockPlaceEvent event) {
         if (isAuthorizedToAlter(event.getPlayer(), event.getBlock())) {
             return;
@@ -42,7 +41,7 @@ public class JVPlayerAlterListener implements Listener {
     }
 
     //Lowest priority so that other plugins can cancel this event
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockBreakEvent(final BlockBreakEvent event) {
         if (isAuthorizedToAlter(event.getPlayer(), event.getBlock())) {
             return;
@@ -54,7 +53,7 @@ public class JVPlayerAlterListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockIgniteEvent(final BlockIgniteEvent event) {
         //This event isn't only triggered by a player, so we need to check if the igniter is a player
         if (event.getPlayer() == null) {
@@ -71,7 +70,7 @@ public class JVPlayerAlterListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPaintingPlace(final PaintingPlaceEvent event) {
         //TODO: Is this null check needed? is this fired when paintings are broken by non-players
         if (event.getPlayer() == null) {
@@ -90,7 +89,7 @@ public class JVPlayerAlterListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPaintingDestruction(final PaintingBreakEvent preEvent) {
         if (!(preEvent instanceof PaintingBreakByEntityEvent)) {
             return;
@@ -98,7 +97,7 @@ public class JVPlayerAlterListener implements Listener {
 
         PaintingBreakByEntityEvent event = (PaintingBreakByEntityEvent) preEvent;
 
-        if (event.getRemover() == null || !(event.getRemover() instanceof CraftPlayer)) {
+        if (event.getRemover() == null || !(event.getRemover() instanceof Player)) {
             return;
         }
 
@@ -114,7 +113,7 @@ public class JVPlayerAlterListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBucketEmptyEvent(PlayerBucketEmptyEvent event) {
         if (event.isCancelled()) {
             return;
@@ -130,7 +129,7 @@ public class JVPlayerAlterListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBucketFillEvent(PlayerBucketFillEvent event) {
         if (event.isCancelled()) {
             return;

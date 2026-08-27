@@ -28,7 +28,8 @@ import com.johnymuffin.jvillage.beta.tasks.AutoClaimingTask;
 import com.johnymuffin.jvillage.beta.tasks.AutoUnclaimingTask;
 import com.johnymuffin.jvillage.beta.tasks.AutomaticSaving;
 import com.johnymuffin.jvillage.beta.tasks.Metrics;
-import com.legacyminecraft.poseidon.event.PoseidonCustomListener;
+import com.legacyminecraft.poseidon.Poseidon;
+import com.legacyminecraft.poseidon.profile.MinecraftProfile;
 import com.massivecraft.factions.*;
 import com.massivecraft.factions.struct.Role;
 import com.palmergames.bukkit.towny.Towny;
@@ -37,7 +38,6 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.projectposeidon.api.PoseidonUUID;
-import com.projectposeidon.johnymuffin.UUIDManager;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -47,10 +47,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -59,7 +59,7 @@ import java.util.logging.Logger;
 
 import static com.johnymuffin.jvillage.beta.JVUtility.getUUIDFromPoseidonCache;
 
-public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustomListener {
+public class JVillage extends JavaPlugin implements ClaimManager, Listener {
     //Basic Plugin Info
     private static JVillage plugin;
     private Logger log;
@@ -239,15 +239,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
             }
 
         }
-    }
-
-    @EventHandler
-    public void onCustomEvent(final Event customEvent) {
-        if (!apiEnabled) return;
-        if (!(customEvent instanceof JWebAPIDisable)) return;
-        //Remove API routes if enabled and JStoreDisableEvent is called
-        logger(Level.INFO, "JWebAPI disabled, removing API routes");
-        removeAPIRoutes();
     }
 
     @Override
@@ -472,12 +463,8 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 
         UUID placeholderUUID = UUID.fromString(settings.getConfigString("settings.import-placeholder-account.uuid"));
         String placeholderUsername = settings.getConfigString("settings.import-placeholder-account.name");
-        //Add UUID to Poseidon UUIDManager
-        try {
-            UUIDManager.getInstance().receivedUUID(placeholderUsername, placeholderUUID, (System.currentTimeMillis() / 1000L), true);
-        } catch (Exception exception) {
-            logger(Level.WARNING, "Could not add placeholder UUID to Poseidon UUIDCache. This could cause Unknown User to be shown for some imported Villages.");
-        }
+        //Add UUID to Poseidon profile cache
+        Poseidon.getProfileCache().addProfile(new MinecraftProfile(placeholderUUID, placeholderUsername, true));
 
         Towny towny = (Towny) getServer().getPluginManager().getPlugin("Towny");
 
@@ -660,12 +647,8 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
 
         UUID placeholderUUID = UUID.fromString(settings.getConfigString("settings.import-placeholder-account.uuid"));
         String placeholderUsername = settings.getConfigString("settings.import-placeholder-account.name");
-        //Add UUID to Poseidon UUIDManager
-        try {
-            UUIDManager.getInstance().receivedUUID(placeholderUsername, placeholderUUID, (System.currentTimeMillis() / 1000L), true);
-        } catch (Exception exception) {
-            logger(Level.WARNING, "Could not add placeholder UUID to Poseidon UUIDCache. This could cause Unknown User to be shown for some imported Villages.");
-        }
+        //Add UUID to Poseidon profile cache
+        Poseidon.getProfileCache().addProfile(new MinecraftProfile(placeholderUUID, placeholderUsername, true));
 
         //Get Private Factions Board
         HashMap<FLocation, Integer> factionClaims;
@@ -973,7 +956,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         return false;
     }
 
-    @Nullable
     public UUID getUUIDFromUsername(String username) {
         UUID uuid = getUUIDFromPoseidonCache(username);
         if (uuid == null) {
@@ -983,7 +965,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, PoseidonCustom
         return uuid;
     }
 
-    @Nullable
     public String getUsernameFromUUID(UUID uuid) {
         String username = PoseidonUUID.getPlayerUsernameFromUUID(uuid);
 

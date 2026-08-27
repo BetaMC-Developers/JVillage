@@ -1,11 +1,11 @@
 package com.johnymuffin.jvillage.beta.routes.api.v1;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.VillageFlags;
 import com.johnymuffin.jvillage.beta.routes.JVillageNormalRoute;
 import org.bukkit.Bukkit;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -41,57 +41,57 @@ public class JVillageGetVillageRoute extends JVillageNormalRoute {
 
                     Village village = this.jVillage.getVillageMap().getVillage(villageUUID);
 
-                    JSONObject villageJSON = new JSONObject();
+                    JsonObject villageJSON = new JsonObject();
 
                     //Return error if village does not exist
                     if (village == null) {
-                        villageJSON.put("found", false);
-                        villageJSON.put("error", false);
+                        villageJSON.addProperty("found", false);
+                        villageJSON.addProperty("error", false);
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
-                        response.getWriter().write(villageJSON.toJSONString());
+                        response.getWriter().write(villageJSON.toString());
                         ctxt.complete();
                         return;
                     }
 
-                    villageJSON.put("found", true);
+                    villageJSON.addProperty("found", true);
 
-                    villageJSON.put("name", village.getTownName());
-                    villageJSON.put("uuid", village.getTownUUID().toString());
-                    villageJSON.put("owner", village.getOwner().toString());
+                    villageJSON.addProperty("name", village.getTownName());
+                    villageJSON.addProperty("uuid", village.getTownUUID().toString());
+                    villageJSON.addProperty("owner", village.getOwner().toString());
                     //Get all assistants
-                    JSONArray assistants = new JSONArray();
+                    JsonArray assistants = new JsonArray();
                     for (UUID assistant : village.getAssistants()) {
                         assistants.add(assistant.toString());
                     }
-                    villageJSON.put("assistants", assistants);
+                    villageJSON.add("assistants", assistants);
                     //Get all members
-                    JSONArray members = new JSONArray();
+                    JsonArray members = new JsonArray();
                     for (UUID member : village.getMembers()) {
                         members.add(member.toString());
                     }
-                    villageJSON.put("members", members);
+                    villageJSON.add("members", members);
 
-                    villageJSON.put("spawn", village.getTownSpawn().getJsonObject());
+                    villageJSON.add("spawn", village.getTownSpawn().getJsonObject());
                     //Town Flags
-                    JSONObject flags = new JSONObject();
+                    JsonObject flags = new JsonObject();
                     for (VillageFlags flag : village.getFlags().keySet()) {
-                        flags.put(flag.toString(), village.getFlags().get(flag));
+                        flags.addProperty(flag.toString(), village.getFlags().get(flag));
                     }
-                    villageJSON.put("flags", flags);
-                    villageJSON.put("claims", village.getTotalClaims());
-                    villageJSON.put("error", false);
+                    villageJSON.add("flags", flags);
+                    villageJSON.addProperty("claims", village.getTotalClaims());
+                    villageJSON.addProperty("error", false);
 
-                    villageJSON.put("creationTime", village.getCreationTime());
+                    villageJSON.addProperty("creationTime", village.getCreationTime());
 
-                    villageJSON.put("balance", village.getBalance());
+                    villageJSON.addProperty("balance", village.getBalance());
 
                     //Send response
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(villageJSON.toJSONString());
+                    response.getWriter().write(villageJSON.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

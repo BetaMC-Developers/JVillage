@@ -1,41 +1,37 @@
 package com.johnymuffin.jvillage.beta.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftGhast;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.entity.CraftSlime;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 import org.bukkit.entity.Wolf;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 
-public class JVMobListener extends EntityListener {
+public class JVMobListener implements Listener {
     private JVillage plugin;
 
     public JVMobListener(JVillage plugin) {
         this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE_BY_ENTITY, this, Event.Priority.Normal, plugin);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Lowest)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onMobSpawnEvent(final CreatureSpawnEvent event) {
         Entity entity = event.getEntity();
         if (!(
             entity instanceof Monster ||
-            entity instanceof CraftSlime ||
-            entity instanceof CraftGhast
+            entity instanceof Slime ||
+            entity instanceof Ghast
         )) return;
 
         //See if the mob is in a village
@@ -57,7 +53,7 @@ public class JVMobListener extends EntityListener {
 //        System.out.println("Blocked a hostile mob from spawning in a village");
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageEvent(final EntityDamageEvent preEvent) {
         if (!(preEvent instanceof EntityDamageByEntityEvent)) {
             return;
@@ -73,10 +69,10 @@ public class JVMobListener extends EntityListener {
             }
         }
 
-        CraftEntity damager = (CraftEntity) event.getDamager();
+        Entity damager = event.getDamager();
 
         //Return if the victim is not a player
-        if (!(event.getEntity() instanceof CraftPlayer)) {
+        if (!(event.getEntity() instanceof Player)) {
 //            System.out.println("EntityDamageByEntityEvent: " + event.getEntity().toString());
             return;
         }

@@ -1,5 +1,8 @@
 package com.johnymuffin.jvillage.beta.models;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.johnymuffin.jvillage.beta.JVillage;
 import com.johnymuffin.jvillage.beta.interfaces.ClaimManager;
 import com.johnymuffin.jvillage.beta.models.chunk.ChunkClaimSettings;
@@ -8,8 +11,6 @@ import com.johnymuffin.jvillage.beta.models.chunk.VClaim;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,37 +102,36 @@ public class Village implements ClaimManager {
     }
 
     //Create village from JSON
-    public Village(JVillage plugin, UUID uuid, JSONObject object) {
+    public Village(JVillage plugin, UUID uuid, JsonObject object) {
         this.plugin = plugin;
-        this.townName = String.valueOf(object.get("name"));
+        this.townName = object.get("name").getAsString();
         this.townUUID = uuid; // Ignore UUID in JSON file and use the one from the file name
-        this.owner = UUID.fromString(String.valueOf(object.get("owner")));
-        this.townSpawn = new VSpawnCords((JSONObject) object.get("townSpawn"));
-        JSONObject warps = (JSONObject) object.getOrDefault("warps", new JSONObject());
-        for (Object warp : warps.keySet()) {
-            String warpName = warp.toString();
-            VSpawnCords cords = new VSpawnCords((JSONObject) warps.get(warpName));
+        this.owner = UUID.fromString(object.get("owner").getAsString());
+        this.townSpawn = new VSpawnCords(object.get("townSpawn").getAsJsonObject());
+        JsonObject warps = object.has("warps") ? object.get("warps").getAsJsonObject() : new JsonObject();
+        for (String warpName : warps.keySet()) {
+            VSpawnCords cords = new VSpawnCords(warps.get(warpName).getAsJsonObject());
             this.warps.put(warpName, cords);
         }
 
-        JSONArray members = (JSONArray) object.get("members");
-        for (Object member : members) {
-            this.members.add(UUID.fromString(String.valueOf(member)));
+        JsonArray members = object.get("members").getAsJsonArray();
+        for (JsonElement member : members) {
+            this.members.add(UUID.fromString(member.getAsString()));
         }
-        JSONArray assistants = (JSONArray) object.get("assistants");
-        for (Object assistant : assistants) {
-            this.assistants.add(UUID.fromString(String.valueOf(assistant)));
+        JsonArray assistants = object.get("assistants").getAsJsonArray();
+        for (JsonElement assistant : assistants) {
+            this.assistants.add(UUID.fromString(assistant.getAsString()));
         }
-        JSONArray invited = (JSONArray) object.getOrDefault("invited", new JSONArray());
-        for (Object invitee : invited) {
-            this.invited.add(UUID.fromString(String.valueOf(invitee)));
+        JsonArray invited = object.has("invited") ? object.get("invited").getAsJsonArray() : new JsonArray();
+        for (JsonElement invitee : invited) {
+            this.invited.add(UUID.fromString(invitee.getAsString()));
         }
 
-        JSONArray claims = (JSONArray) object.get("claims");
+        JsonArray claims = object.get("claims").getAsJsonArray();
         //Loop through worlds
-        for (Object claim : claims) {
-            JSONArray worldClaims = (JSONArray) claim;
-            String worldName = String.valueOf(worldClaims.get(0));
+        for (JsonElement claim : claims) {
+            JsonArray worldClaims = claim.getAsJsonArray();
+            String worldName = worldClaims.get(0).getAsString();
             worldClaims.remove(0); //Remove world name from arrays
 
             //Skip to next world if world is not loaded
@@ -142,10 +142,10 @@ public class Village implements ClaimManager {
 
 
             //Loop through claims in each world
-            for (Object worldClaim : worldClaims) {
-                JSONArray claimCords = (JSONArray) worldClaim;
-                int x = Integer.parseInt(String.valueOf(claimCords.get(0)));
-                int z = Integer.parseInt(String.valueOf(claimCords.get(1)));
+            for (JsonElement worldClaim : worldClaims) {
+                JsonArray claimCords = worldClaim.getAsJsonArray();
+                int x = claimCords.get(0).getAsInt();
+                int z = claimCords.get(1).getAsInt();
 //                VChunk vChunk = new VChunk(worldName, x, z);
                 VClaim vClaim = new VClaim(this.getTownUUID(), worldName, x, z);
 //                if (this.plugin.isClaimed(vClaim)) {
@@ -155,40 +155,36 @@ public class Village implements ClaimManager {
 //                }
                 addClaim(vClaim);
             }
-            balance = Double.parseDouble(String.valueOf(object.getOrDefault("balance", 0.0)));
+            balance = object.has("balance") ? object.get("balance").getAsDouble() : 0.0;
             //rank = determineVillageRank(members.size());
         }
 
         //Load chunk claim metadata
-        JSONArray chunkClaimMetadata = (JSONArray) object.getOrDefault("chunkClaimMetadata", new JSONArray());
-        for (Object worldArrayRaw : chunkClaimMetadata) {
-            JSONArray worldArray = (JSONArray) worldArrayRaw;
+        JsonArray chunkClaimMetadata = object.has("chunkClaimMetadata") ? object.get("chunkClaimMetadata").getAsJsonArray() : new JsonArray();
+        for (JsonElement worldArrayRaw : chunkClaimMetadata) {
+            JsonArray worldArray = worldArrayRaw.getAsJsonArray();
 
-            String worldName = String.valueOf(worldArray.get(0));
+            String worldName = worldArray.get(0).getAsString();
 
             for (int i = 1; i < worldArray.size(); i++) {
-                JSONObject chunkMetadata = (JSONObject) worldArray.get(i);
+                JsonObject chunkMetadata = worldArray.get(i).getAsJsonObject();
                 ChunkClaimSettings settings = new ChunkClaimSettings(this, chunkMetadata, worldName);
                 claimMetadata.add(settings);
             }
 
         }
 
-        this.creationTime = Long.parseLong(String.valueOf(object.getOrDefault("creationTime", 1640995200L)));
+        this.creationTime = object.has("creationTime") ? object.get("creationTime").getAsLong() : 1640995200L;
 
 
         initializeFlags();
         //Load flags saved
-        JSONObject flags = (JSONObject) object.getOrDefault("flags", new JSONObject());
-        for (Object flag : flags.keySet()) {
-            this.flags.put(VillageFlags.valueOf(String.valueOf(flag)), Boolean.parseBoolean(String.valueOf(flags.get(flag))));
+        JsonObject flags = object.has("flags") ? object.get("flags").getAsJsonObject() : new JsonObject();
+        for (String flag : flags.keySet()) {
+            this.flags.put(VillageFlags.valueOf(flag), flags.get(flag).getAsBoolean());
         }
 
-        Village village = (Village) this;
-        initializeRank(village);
-        //Load rank and owner title
-        JSONObject rank = (JSONObject) object.getOrDefault("rank", new JSONObject());
-        JSONObject ownerTitle = (JSONObject) object.getOrDefault("ownerTitle", new JSONObject());
+        initializeRank(this);
     }
 
     public long getCreationTime() {
@@ -228,31 +224,31 @@ public class Village implements ClaimManager {
     }
 
 
-    public JSONObject getJsonObject() {
-        JSONObject object = new JSONObject();
-        object.put("name", this.townName);
-        object.put("owner", this.owner.toString());
-        JSONArray members = new JSONArray();
+    public JsonObject getJsonObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("name", this.townName);
+        object.addProperty("owner", this.owner.toString());
+        JsonArray members = new JsonArray();
         for (UUID member : this.members) {
             members.add(member.toString());
         }
-        object.put("members", members);
-        JSONArray assistants = new JSONArray();
+        object.add("members", members);
+        JsonArray assistants = new JsonArray();
         for (UUID assistant : this.assistants) {
             assistants.add(assistant.toString());
         }
-        object.put("assistants", assistants);
-        JSONArray invited = new JSONArray();
+        object.add("assistants", assistants);
+        JsonArray invited = new JsonArray();
         for (UUID invitee : this.invited) {
             invited.add(invitee.toString());
         }
-        object.put("invited", invited);
-        JSONArray claimsJsonArray = new JSONArray();
+        object.add("invited", invited);
+        JsonArray claimsJsonArray = new JsonArray();
         for (String worldName : this.getWorldsWithClaims()) {
-            JSONArray worldClaims = new JSONArray();
+            JsonArray worldClaims = new JsonArray();
             worldClaims.add(worldName);
             for (VClaim vClaim : this.getClaimsInWorld(worldName)) {
-                JSONArray claimCords = new JSONArray();
+                JsonArray claimCords = new JsonArray();
                 claimCords.add(vClaim.getX());
                 claimCords.add(vClaim.getZ());
                 worldClaims.add(claimCords);
@@ -261,37 +257,34 @@ public class Village implements ClaimManager {
         }
 
         //Save chunk claim metadata
-        JSONArray chunkClaimMetadata = new JSONArray();
+        JsonArray chunkClaimMetadata = new JsonArray();
         for (String worldName : this.getWorldsWithClaims()) {
-            JSONArray worldArray = new JSONArray();
+            JsonArray worldArray = new JsonArray();
             worldArray.add(worldName);
             for (ChunkClaimSettings settings : this.getChunkClaimSettingsInWorld(worldName)) {
                 worldArray.add(settings.getJsonObject());
             }
             chunkClaimMetadata.add(worldArray);
         }
-        object.put("chunkClaimMetadata", chunkClaimMetadata);
+        object.add("chunkClaimMetadata", chunkClaimMetadata);
 
         //Save Flags
-        JSONObject flags = new JSONObject();
+        JsonObject flags = new JsonObject();
         for (VillageFlags flag : this.flags.keySet()) {
-            flags.put(flag.toString(), this.flags.get(flag));
+            flags.addProperty(flag.toString(), this.flags.get(flag));
         }
-        object.put("flags", flags);
+        object.add("flags", flags);
 
-        object.put("claims", claimsJsonArray);
-        object.put("townSpawn", this.townSpawn.getJsonObject());
-        object.put("creationTime", this.creationTime);
-        object.put("balance", this.balance);
+        object.add("claims", claimsJsonArray);
+        object.add("townSpawn", this.townSpawn.getJsonObject());
+        object.addProperty("creationTime", this.creationTime);
+        object.addProperty("balance", this.balance);
 
-        object.put("rank", this.rankName);
-        object.put("ownerTitle", this.ownerTitleName);
-
-        JSONObject warps = new JSONObject();
+        JsonObject warps = new JsonObject();
         for (Map.Entry<String, VSpawnCords> entry : this.warps.entrySet()) {
-            warps.put(entry.getKey(), entry.getValue().getJsonObject());
+            warps.add(entry.getKey(), entry.getValue().getJsonObject());
         }
-        object.put("warps", warps);
+        object.add("warps", warps);
         return object;
     }
 

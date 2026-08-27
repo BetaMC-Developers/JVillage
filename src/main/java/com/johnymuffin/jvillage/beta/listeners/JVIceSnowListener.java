@@ -17,7 +17,7 @@ public class JVIceSnowListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Normal)
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event) {
         Block block = event.getBlock();
         int id = block.getTypeId();

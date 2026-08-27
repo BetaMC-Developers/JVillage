@@ -6,42 +6,26 @@
 
     <groupId>com.johnymuffin</groupId>
     <artifactId>JVillage</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <repositories>
-        <!-- Repository for resolving release dependencies -->
         <repository>
-            <id>johnymuffin-nexus-releases</id>
+            <id>johnymuffin-nexus</id>
             <url>https://repository.johnymuffin.com/repository/maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
-        <!-- Repository for resolving snapshot dependencies -->
         <repository>
-            <id>johnymuffin-nexus-snapshots</id>
-            <url>https://repository.johnymuffin.com/repository/maven-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>jitpack</id>
+            <url>https://jitpack.io/</url>
         </repository>
     </repositories>
 
-
-
     <build>
+        <defaultGoal>clean package</defaultGoal>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -52,73 +36,61 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.15.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>${java.version}</release>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
-
         <dependency>
-            <groupId>com.legacyminecraft.poseidon</groupId>
-            <artifactId>poseidon-craftbukkit</artifactId>
-            <version>1.1.8</version>
+            <groupId>com.legacyminecraft</groupId>
+            <artifactId>poseidon-server</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>com.johnymuffin.beta</groupId>
             <artifactId>fundamentals</artifactId>
             <version>1.0.6</version>
         </dependency>
-
         <dependency>
-            <groupId>me.zavdav</groupId>
+            <groupId>com.github.zcoreplugin</groupId>
             <artifactId>zcore</artifactId>
-            <version>0.22.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/zcore-0.22.1.jar</systemPath>
+            <version>0.24.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.johnymuffin.beta</groupId>
             <artifactId>webapi</artifactId>
             <version>1.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.palmergames.bukkit</groupId>
             <artifactId>towny</artifactId>
             <version>0.76.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>bukkit</artifactId>
             <version>5.2.3</version>
         </dependency>
-
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>bukkit</artifactId>
             <version>4.6</version>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>factions</artifactId>
             <version>1.5.1</version>
         </dependency>
-
     </dependencies>
 
 </project>

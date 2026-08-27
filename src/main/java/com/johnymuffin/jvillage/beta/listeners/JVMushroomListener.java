@@ -5,6 +5,7 @@ import com.johnymuffin.jvillage.beta.models.Village;
 import com.johnymuffin.jvillage.beta.models.chunk.VChunk;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.block.Block;
@@ -16,7 +17,7 @@ public class JVMushroomListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = Event.Priority.Low)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockSpread(BlockSpreadEvent event) {
         Block source = event.getSource();
         Block newBlock = event.getNewState().getBlock();

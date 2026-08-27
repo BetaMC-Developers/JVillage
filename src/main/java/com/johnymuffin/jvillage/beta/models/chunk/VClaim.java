@@ -1,7 +1,6 @@
 package com.johnymuffin.jvillage.beta.models.chunk;
 
 import com.johnymuffin.jvillage.beta.models.Village;
-import org.json.simple.JSONObject;
 
 import java.util.UUID;
 
