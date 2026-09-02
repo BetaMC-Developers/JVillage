@@ -45,7 +45,7 @@ public class JPlayerData extends Configuration {
 
     public String getPlayerData(UUID uuid, String key) {
         HashMap<String, String> data = getPlayer(uuid);
-        return data.get(key);
+        return String.valueOf(data.get(key));
     }
 
     public Boolean getPlayerDataBoolean(UUID uuid, String key) {
