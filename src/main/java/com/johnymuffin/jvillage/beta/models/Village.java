@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.UUID;
@@ -313,21 +314,16 @@ public class Village implements ClaimManager {
 
     public boolean addClaim(VClaim vChunk) {
         modified = true; // Indicate that the village has been modified and needs to be saved
-        return plugin.getVillageClaimsArray(this).add(vChunk);
+        return plugin.addClaim(vChunk);
     }
 
     public boolean removeClaim(VClaim vChunk) {
         modified = true; // Indicate that the village has been modified and needs to be saved
-        return plugin.getVillageClaimsArray(this).remove(vChunk);
-    }
-
-    public boolean removeClaim(VChunk vChunk) {
-        modified = true; // Indicate that the village has been modified and needs to be saved
-        return plugin.getVillageClaimsArray(this).remove(vChunk);
+        return plugin.removeClaim(vChunk);
     }
 
     public boolean isClaimed(VChunk vChunk) {
-        return plugin.getVillageClaimsArray(this).contains(vChunk);
+        return plugin.isClaimed(vChunk);
     }
 
 
@@ -522,7 +518,7 @@ public class Village implements ClaimManager {
         return false;
     }
 
-    public ArrayList<VClaim> getClaims() {
+    public List<VClaim> getClaims() {
         return plugin.getVillageClaimsArray(this);
     }
 

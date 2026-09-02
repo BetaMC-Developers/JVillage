@@ -40,7 +40,7 @@ public class JMapCommand extends JVBaseCommand implements CommandExecutor {
         VPlayer vPlayer = plugin.getPlayerMap().getPlayer(player.getUniqueId());
         Village village = vPlayer.getSelectedVillage();
 
-        ArrayList<VClaim> allClaims = (ArrayList<VClaim>) plugin.getAllClaims().clone();
+        List<VClaim> allClaims = List.of(plugin.getAllClaims().toArray(new VClaim[0]));
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
             String[] villageMap = createMap(player.getLocation(), allClaims, village);

@@ -1,7 +1,6 @@
 package com.johnymuffin.jvillage.beta;
 
 import com.johnymuffin.beta.webapi.JWebAPI;
-import com.johnymuffin.beta.webapi.event.JWebAPIDisable;
 import com.johnymuffin.jvillage.beta.commands.JVilageAdminCMD;
 import com.johnymuffin.jvillage.beta.commands.JVillageCMD;
 import com.johnymuffin.jvillage.beta.commands.VResidentCommand;
@@ -13,6 +12,7 @@ import com.johnymuffin.jvillage.beta.economy.handlers.FundamentalsEconomy;
 import com.johnymuffin.jvillage.beta.economy.handlers.ZCoreEconomy;
 import com.johnymuffin.jvillage.beta.interfaces.ClaimManager;
 import com.johnymuffin.jvillage.beta.listeners.*;
+import com.johnymuffin.jvillage.beta.maps.JClaimMap;
 import com.johnymuffin.jvillage.beta.maps.JPlayerMap;
 import com.johnymuffin.jvillage.beta.maps.JVillageMap;
 import com.johnymuffin.jvillage.beta.models.VCords;
@@ -44,9 +44,8 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -68,7 +67,6 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
     //    private HashMap<VillageEntry, Village> villages = new HashMap<>(); //Main list for all villages
 //    private HashMap<String, WorldClaimManager> claims = new HashMap<>();
 //    private ArrayList<VClaim> claims = new ArrayList<>();
-    private HashMap<Village, ArrayList<VClaim>> claims = new HashMap<>();
 
     private JVillageLanguage language;
     private JVillageSettings settings;
@@ -78,6 +76,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
     private boolean errored = false;
 
     private JVillageMap villageMap;
+    private JClaimMap claimMap;
     private JPlayerMap playerMap;
 
     private boolean apiEnabled = false;
@@ -117,6 +116,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
         //Load villages
         int villagesLoaded = 0;
         int claimsLoaded = 0;
+        claimMap = new JClaimMap();
         villageMap = new JVillageMap(this);
 
         //Generate memory claim cache
@@ -283,29 +283,27 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
         return villageMap;
     }
 
+    public JClaimMap getClaimMap() {
+        return claimMap;
+    }
+
     public JPlayerMap getPlayerMap() {
         return playerMap;
     }
 
     //Village at location
     public Village getVillageAtLocation(Location location) {
-        VChunk vChunk = new VChunk(location);
-
-        for (VClaim vClaim : getAllClaims()) {
-            if (vClaim.equals(vChunk)) {
-                return getVillageMap().getVillage(vClaim.getVillage());
-            }
-        }
-        return null;
+        return getVillageAtLocation(new VChunk(location));
     }
 
     public Village getVillageAtLocation(VChunk vChunk) {
-        for (VClaim vClaim : getAllClaims()) {
-            if (vClaim.equals(vChunk)) {
-                return getVillageMap().getVillage(vClaim.getVillage());
-            }
+        World world = Bukkit.getWorld(vChunk.getWorldName());
+        if (world == null) {
+            return null;
         }
-        return null;
+
+        VClaim vClaim = claimMap.getClaimAtChunk(world, vChunk.getX(), vChunk.getZ());
+        return vClaim == null ? null : villageMap.getVillage(vClaim.getVillage());
     }
 
     private Village[] getVillagesAtLocation(VChunk vChunk) {
@@ -320,12 +318,8 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
 
     }
 
-    public ArrayList<VClaim> getAllClaims() {
-        ArrayList<VClaim> allClaims = new ArrayList<>();
-        for (ArrayList<VClaim> vClaims : claims.values()) {
-            allClaims.addAll(vClaims);
-        }
-        return allClaims;
+    public List<VClaim> getAllClaims() {
+        return claimMap.getAllClaims();
     }
 
     public void errorShutdown(String message) {
@@ -411,10 +405,7 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
         }
 
         //Remove all claims from main plugin cache
-        if (this.claims.remove(village) == null) {
-            logger(Level.WARNING, "Failed to remove village from claims cache.");
-            throw new RuntimeException("Failed to remove village from claims cache.");
-        }
+        claimMap.getVillageClaims(village).forEach(this::removeClaim);
 
         //Remove village from vPlayers currently online
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -874,13 +865,12 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
     }
 
     public VClaim[] getClaimsInWorld(String worldName) {
-        ArrayList<VClaim> claimsInWorld = new ArrayList<>();
-        for (VClaim claim2 : getAllClaims()) {
-            if (claim2.getWorldName().equals(worldName)) {
-                claimsInWorld.add(claim2);
-            }
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            return new VClaim[0];
         }
-        return claimsInWorld.toArray(new VClaim[0]);
+
+        return claimMap.getClaimsInWorld(world).toArray(new VClaim[0]);
     }
 
     public JVillageSettings getSettings() {
@@ -905,12 +895,8 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
 
     }
 
-    public ArrayList<VClaim> getVillageClaimsArray(Village village) {
-        if (!this.claims.containsKey(village)) {
-            this.claims.put(village, new ArrayList<>());
-        }
-
-        return this.claims.get(village);
+    public List<VClaim> getVillageClaimsArray(Village village) {
+        return claimMap.getVillageClaims(village);
     }
 
     public boolean villageNameAvailable(String villageName) {
@@ -933,27 +919,15 @@ public class JVillage extends JavaPlugin implements ClaimManager, Listener {
 
 
     public boolean addClaim(VClaim vChunk) {
-//        WorldClaimManager worldClaimManager = getWorldClaimManager(vChunk.getWorldName(), false);
-//        return worldClaimManager.addClaim(village, vChunk);
-        Village village = getVillageMap().getVillage(vChunk.getVillage());
-        return this.claims.get(village).add(vChunk);
+        return claimMap.addClaim(vChunk);
     }
 
     public boolean removeClaim(VClaim vChunk) {
-        Village village = getVillageMap().getVillage(vChunk.getVillage());
-
-        ArrayList<VClaim> villageClaims = this.claims.get(village);
-        return villageClaims.remove(vChunk);
+        return claimMap.removeClaim(vChunk);
     }
 
     public boolean isClaimed(VChunk vChunk) {
-        ArrayList<VClaim> villageClaims = getAllClaims();
-        for (VClaim vClaim : villageClaims) {
-            if (vClaim.equals(vChunk)) {
-                return true;
-            }
-        }
-        return false;
+        return claimMap.isClaimed(vChunk);
     }
 
     public UUID getUUIDFromUsername(String username) {

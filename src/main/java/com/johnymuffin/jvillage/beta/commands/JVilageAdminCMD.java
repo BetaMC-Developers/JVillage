@@ -9,6 +9,7 @@ import com.johnymuffin.jvillage.beta.models.chunk.VChunk;
 import com.johnymuffin.jvillage.beta.models.chunk.VClaim;
 import com.johnymuffin.jvillage.beta.player.VPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -109,12 +110,13 @@ public class JVilageAdminCMD extends JVBaseCommand {
 
         boolean stillClaimed = true;
         while (stillClaimed) {
-            Village village = plugin.getVillageAtLocation(vChunk);
-            if (village == null) {
+            VClaim vClaim = plugin.getClaimMap().getClaimAtChunk(player.getWorld(), vChunk.getX(), vChunk.getZ());
+            if (vClaim == null) {
                 stillClaimed = false;
                 continue;
             }
-            village.removeClaim(vChunk);
+            Village village = plugin.getVillageMap().getVillage(vClaim.getVillage());
+            village.removeClaim(vClaim);
             //Check if the village is still valid
             if (village.getClaims().size() == 0) {
                 String message = language.getMessage("command_villageadmin_village_delete_broadcast");
